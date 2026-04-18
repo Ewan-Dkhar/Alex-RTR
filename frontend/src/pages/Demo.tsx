@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Send, MapPin, Building2, BadgeIndianRupee, TrendingUp, Download } from "lucide-react"
+import { Send, MapPin, Building2, BadgeIndianRupee, TrendingUp, Download, Map } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 import { Card } from "../components/ui/Card"
 import { Button } from "../components/ui/Button"
-import { mockChats, mockDashboardData, mockCostData, mockRevenueData } from "../data/mockData"
+import { mockChats, mockDashboardData, mockCostData, mockRevenueData, mockHeatmapData } from "../data/mockData"
 
 const COLORS = ['#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE', '#DBEAFE'];
 
@@ -13,6 +13,8 @@ export function Demo() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [step, setStep] = useState(0);
+  const [minBudget, setMinBudget] = useState<number>(10);
+  const [maxBudget, setMaxBudget] = useState<number>(30);
 
   const handleSend = () => {
     if(!input.trim()) return;
@@ -164,6 +166,77 @@ export function Demo() {
                 </div>
               </Card>
             </div>
+
+            {/* Heatmap Section */}
+            <Card variant="raised" className="p-5 flex flex-col">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2"><Map size={16}/> ROI Heatmap</h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <label className="text-gray-500 font-medium">Min (₹L):</label>
+                    <input type="number" value={minBudget} onChange={(e) => setMinBudget(Number(e.target.value))} className="w-16 px-2 py-1.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <label className="text-gray-500 font-medium">Max (₹L):</label>
+                    <input type="number" value={maxBudget} onChange={(e) => setMaxBudget(Number(e.target.value))} className="w-16 px-2 py-1.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {(() => {
+                  const filteredPlots = mockHeatmapData.filter(p => p.cost >= minBudget && p.cost <= maxBudget);
+                  const maxRoi = filteredPlots.length > 0 ? Math.max(...filteredPlots.map(p => p.roi)) : -1;
+
+                  return mockHeatmapData.map((plot) => {
+                    const inBudget = plot.cost >= minBudget && plot.cost <= maxBudget;
+                    const isMaxRoi = inBudget && plot.roi === maxRoi;
+                    
+                    return (
+                      <motion.div 
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        key={plot.id} 
+                        className={`relative p-3.5 rounded-xl border flex flex-col justify-between transition-all duration-300 ${inBudget ? 'bg-white shadow-sm hover:shadow-md hover:-translate-y-1 cursor-pointer border-gray-100' : 'bg-gray-50/50 border-gray-100 opacity-50 grayscale'} ${isMaxRoi ? 'ring-2 ring-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] border-transparent' : ''}`}
+                      >
+                        {isMaxRoi && (
+                          <div className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 z-10">
+                            ★ Top Pick
+                          </div>
+                        )}
+                        <div className="flex justify-between items-start mb-3">
+                          <span className={`text-[13px] font-medium line-clamp-1 pr-2 ${isMaxRoi ? 'text-blue-950 font-bold' : 'text-gray-800'}`}>{plot.name}</span>
+                          {inBudget && (
+                            <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${plot.roi > 18 ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : plot.roi > 12 ? 'bg-blue-400' : 'bg-blue-200'}`} />
+                          )}
+                        </div>
+                        <div className="flex justify-between items-end mt-auto">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Est. Cost</span>
+                            <span className="text-sm font-bold text-gray-900">₹{plot.cost}L</span>
+                          </div>
+                          {inBudget && (
+                            <span className={`text-[11px] font-bold px-2 py-1 rounded-md ${plot.roi > 18 ? 'bg-blue-50 text-blue-700' : plot.roi > 12 ? 'bg-blue-50/80 text-blue-600' : 'bg-gray-100 text-gray-600'} ${isMaxRoi ? 'bg-blue-100 text-blue-800 ring-1 ring-blue-200' : ''}`}>
+                              {plot.roi}% ROI
+                            </span>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  });
+                })()}
+              </div>
+              
+              <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center text-xs text-gray-500 gap-3">
+                <span className="font-medium">Showing areas between ₹{minBudget}L and ₹{maxBudget}L</span>
+                <div className="flex gap-4 items-center bg-gray-50 px-3 py-1.5 rounded-full">
+                  <span className="flex items-center gap-1.5 font-medium"><div className="w-2.5 h-2.5 bg-blue-200 rounded-full"></div> Low ROI</span>
+                  <span className="flex items-center gap-1.5 font-medium"><div className="w-2.5 h-2.5 bg-blue-400 rounded-full"></div> Good ROI</span>
+                  <span className="flex items-center gap-1.5 font-medium"><div className="w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_6px_rgba(59,130,246,0.4)]"></div> Excellent</span>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
 

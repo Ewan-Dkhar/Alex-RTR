@@ -69,3 +69,18 @@ export const mockFAQs = [
     answer: 'Not at all! Alex-RTR is designed to guide first-time founders step-by-step through the process.'
   }
 ];
+
+export const mockHeatmapData = [
+  { id: 1, name: 'Plot A (Gomti N.)', cost: 12, roi: 8, type: 'commercial' },
+  { id: 2, name: 'Plot B (Hazratganj)', cost: 25, roi: 15, type: 'retail' },
+  { id: 3, name: 'Plot C (Indira N.)', cost: 18, roi: 12, type: 'commercial' },
+  { id: 4, name: 'Plot D (Aliganj)', cost: 35, roi: 22, type: 'retail' },
+  { id: 5, name: 'Plot E (Aminabad)', cost: 15, roi: 9, type: 'commercial' },
+  { id: 6, name: 'Plot F (Chowk)', cost: 40, roi: 25, type: 'retail' },
+  { id: 7, name: 'Plot G (Mahanagar)', cost: 20, roi: 14, type: 'commercial' },
+  { id: 8, name: 'Plot H (Gomti N. Ext)', cost: 28, roi: 18, type: 'retail' },
+  { id: 9, name: 'Plot I (Ashiyana)', cost: 10, roi: 6, type: 'commercial' },
+  { id: 10, name: 'Plot J (Kapoorthala)', cost: 30, roi: 19, type: 'retail' },
+  { id: 11, name: 'Plot K (Vikas N.)', cost: 22, roi: 13, type: 'commercial' },
+  { id: 12, name: 'Plot L (Jankipuram)', cost: 14, roi: 8, type: 'commercial' }
+];
