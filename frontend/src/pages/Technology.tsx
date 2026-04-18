@@ -64,8 +64,12 @@ export function Technology() {
           {stack.map((item, i) => (
             <motion.div 
               key={i}
-              whileHover={{ y: -5 }}
-              className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4"
+              whileHover={{ y: -5, scale: 1.02 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4 hover:shadow-[var(--shadow-skeuo-hover)] transition-all duration-300 cursor-default"
             >
               <div className="bg-white p-3 rounded-xl shadow-sm"><item.icon size={20} className="text-blue-600"/></div>
               <div>

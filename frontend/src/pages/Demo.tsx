@@ -114,20 +114,34 @@ export function Demo() {
 
           {/* Insights Panel */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Card variant="raised" className="p-5 flex flex-col justify-center">
-                <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><MapPin size={14}/> Top Area</div>
-                <div className="text-xl font-bold text-gray-900">{mockDashboardData.area}</div>
-              </Card>
-              <Card variant="raised" className="p-5 flex flex-col justify-center">
-                <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><BadgeIndianRupee size={14}/> Setup Est.</div>
-                <div className="text-xl font-bold text-gray-900">{mockDashboardData.costRange}</div>
-              </Card>
-              <Card variant="raised" className="p-5 flex flex-col justify-center sm:col-span-1 col-span-2">
-                <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><TrendingUp size={14}/> Break Even</div>
-                <div className="text-lg font-bold text-gray-900">{mockDashboardData.breakEven}</div>
-              </Card>
-            </div>
+            <motion.div 
+              className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+              }}
+            >
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full">
+                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><MapPin size={14}/> Top Area</div>
+                  <div className="text-xl font-bold text-gray-900">{mockDashboardData.area}</div>
+                </Card>
+              </motion.div>
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full">
+                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><BadgeIndianRupee size={14}/> Setup Est.</div>
+                  <div className="text-xl font-bold text-gray-900">{mockDashboardData.costRange}</div>
+                </Card>
+              </motion.div>
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="sm:col-span-1 col-span-2">
+                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full">
+                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><TrendingUp size={14}/> Break Even</div>
+                  <div className="text-lg font-bold text-gray-900">{mockDashboardData.breakEven}</div>
+                </Card>
+              </motion.div>
+            </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[320px]">
               <Card variant="raised" className="p-5 flex flex-col h-full">
