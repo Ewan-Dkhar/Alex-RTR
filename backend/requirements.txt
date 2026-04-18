@@ -1,0 +1,20 @@
+# Core Framework
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0    # The ASGI server to run FastAPI
+
+# Data Validation & Settings
+pydantic>=2.6.0
+pydantic-settings>=2.2.0     # For parsing the .env file
+
+# Database (Assuming relational like PostgreSQL or SQLite)
+sqlalchemy>=2.0.29           # The ORM
+alembic>=1.13.1              # Database migration tool (like Prisma migrations)
+
+# Security (If you need Authentication/CTF-level hardening)
+passlib[bcrypt]>=1.7.4       # Password hashing
+python-jose[cryptography]>=3.3.0 # JWT token generation
+python-multipart>=0.0.9      # Needed if you accept form data or file uploads
+
+# Testing
+pytest>=8.1.1
+httpx>=0.27.0                # Used by FastAPI's TestClient

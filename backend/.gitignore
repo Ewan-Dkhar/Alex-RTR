@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Databases
+*.sqlite3
+*.db
+/chroma_data_store/
