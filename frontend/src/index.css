@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-secondary: #60A5FA;
+  --color-bg-base: #F7F7F4;
+  --color-card-white: #FFFFFF;
+  --color-card-offwhite: #F2F2EE;
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #6B7280;
+  
+  --shadow-skeuo: 2px 4px 12px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.8);
+  --shadow-skeuo-hover: 4px 8px 16px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.9);
+  --shadow-skeuo-active: inset 2px 2px 6px rgba(0,0,0,0.1);
+  --shadow-beveled: inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer utilities {
+  .bg-skeuo-primary {
+    background: linear-gradient(145deg, #3B82F6, #2563EB);
+  }
+  .bg-skeuo-white {
+    background: linear-gradient(135deg, #ffffff, #f9f9f7);
+  }
+  .bg-skeuo-gray {
+    background: linear-gradient(135deg, #f9f9f7, #ecece8);
+  }
+}
