@@ -132,14 +132,25 @@ export function Home() {
       </section>
 
       {/* Trust Strip */}
-      <section className="border-y border-gray-100 bg-white py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 md:gap-8">
+      <section className="border-y border-gray-100 bg-white py-8 overflow-hidden">
+        <motion.div 
+          className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 md:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           {["Groq Powered", "RAG Enhanced", "Local Insights", "Business Focused"].map((badge, i) => (
-            <div key={i} className="px-5 py-2 rounded-full bg-gray-50 border border-gray-100 shadow-sm text-sm font-semibold text-gray-600">
+            <motion.div 
+              key={i} 
+              variants={itemVariants}
+              whileHover={{ scale: 1.05, y: -2 }}
+              className="px-5 py-2 rounded-full bg-gray-50 border border-gray-100 shadow-sm text-sm font-semibold text-gray-600 cursor-default"
+            >
               {badge}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* Problem Section */}
@@ -184,17 +195,25 @@ export function Home() {
             subtitle="Whether you're opening a cafe or a boutique gym, our models understand the specific nuances of your industry."
           />
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {["Coffee Shop", "Salon", "Gym", "Bakery", "Food Truck", "Boutique"].map((biz, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -5 }}
-                className="bg-gray-50 rounded-xl p-6 text-center border border-gray-100 shadow-sm cursor-pointer transition-colors hover:bg-blue-50"
+                variants={itemVariants}
+                whileHover={{ y: -5, scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gray-50 rounded-xl p-6 text-center border border-gray-100 shadow-sm cursor-pointer transition-colors hover:bg-blue-50 hover:shadow-md"
               >
                 <div className="font-medium text-gray-800">{biz}</div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -202,20 +221,28 @@ export function Home() {
       <section className="py-24 bg-skeuo-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading title="Loved by Local Founders" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {mockTestimonials.map((t, i) => (
-              <Card key={i} variant="raised" className="flex flex-col">
-                <div className="flex mb-4 text-yellow-400">
-                  {"★★★★★".split("").map((star, j) => <span key={j}>{star}</span>)}
-                </div>
-                <p className="text-gray-700 mb-6 flex-1 italic">"{t.text}"</p>
-                <div>
-                  <div className="font-bold text-gray-900">{t.name}</div>
-                  <div className="text-sm text-gray-500">{t.role}</div>
-                </div>
-              </Card>
+              <motion.div key={i} variants={itemVariants} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Card variant="raised" className="flex flex-col h-full hover:shadow-[var(--shadow-skeuo-hover)] transition-shadow duration-300">
+                  <div className="flex mb-4 text-yellow-400">
+                    {"★★★★★".split("").map((star, j) => <span key={j}>{star}</span>)}
+                  </div>
+                  <p className="text-gray-700 mb-6 flex-1 italic">"{t.text}"</p>
+                  <div>
+                    <div className="font-bold text-gray-900">{t.name}</div>
+                    <div className="text-sm text-gray-500">{t.role}</div>
+                  </div>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 

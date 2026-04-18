@@ -48,32 +48,46 @@ export function HowItWorks() {
           <SectionHeading title="Why Alex-RTR?" />
           
           <div className="grid md:grid-cols-2 gap-8">
-            <Card variant="default" className="border-red-100">
-              <div className="text-gray-500 font-semibold mb-6 flex items-center justify-between">
-                Generic AI Chatbot
-                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500"><X size={16}/></div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> Generic, templated responses</li>
-                <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> No business context modeling</li>
-                <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> Generic worldwide data, no local context</li>
-                <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> No visual dashboards or structure</li>
-              </ul>
-            </Card>
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card variant="default" className="border-red-100 hover:shadow-md transition-shadow h-full">
+                <div className="text-gray-500 font-semibold mb-6 flex items-center justify-between">
+                  Generic AI Chatbot
+                  <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500"><X size={16}/></div>
+                </div>
+                <ul className="space-y-4">
+                  <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> Generic, templated responses</li>
+                  <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> No business context modeling</li>
+                  <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> Generic worldwide data, no local context</li>
+                  <li className="flex gap-3 text-gray-600"><X className="text-red-400 shrink-0 mt-0.5" size={18}/> No visual dashboards or structure</li>
+                </ul>
+              </Card>
+            </motion.div>
 
-            <Card variant="raised" className="relative overflow-hidden bg-white">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-10 -mt-10"></div>
-              <div className="text-blue-600 font-bold text-lg mb-6 flex items-center justify-between relative z-10">
-                Alex-RTR
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm"><Check size={16}/></div>
-              </div>
-              <ul className="space-y-4 relative z-10">
-                <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Asks smart clarifying questions</li>
-                <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Tailored financial outputs</li>
-                <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Local vendor routing (RAG pipeline)</li>
-                <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Comprehensive startup roadmap UI</li>
-              </ul>
-            </Card>
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card variant="raised" className="relative overflow-hidden bg-white hover:shadow-[var(--shadow-skeuo-hover)] transition-shadow h-full">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <div className="text-blue-600 font-bold text-lg mb-6 flex items-center justify-between relative z-10">
+                  Alex-RTR
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm"><Check size={16}/></div>
+                </div>
+                <ul className="space-y-4 relative z-10">
+                  <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Asks smart clarifying questions</li>
+                  <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Tailored financial outputs</li>
+                  <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Local vendor routing (RAG pipeline)</li>
+                  <li className="flex gap-3 text-gray-800 font-medium"><Check className="text-blue-500 shrink-0 mt-0.5" size={18}/> Comprehensive startup roadmap UI</li>
+                </ul>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -83,7 +97,14 @@ export function HowItWorks() {
         <SectionHeading title="Frequently Asked Questions" />
         <div className="space-y-4">
           {mockFAQs.map((faq, idx) => (
-            <div key={idx} className="border border-gray-100 rounded-2xl bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              className="border border-gray-100 rounded-2xl bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
               <button 
                 className="w-full px-6 py-4 flex items-center justify-between text-left font-semibold text-gray-900"
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -96,7 +117,7 @@ export function HowItWorks() {
                   {faq.answer}
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
