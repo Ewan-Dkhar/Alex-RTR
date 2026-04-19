@@ -518,6 +518,9 @@ def action_taker_node(state: AgentState) -> dict:
         "data-extraction node. You have NO access to tools or raw data. "
         "Using ONLY the compressed strategy provided, produce a "
         "machine-parseable action plan as raw JSON.\n\n"
+        "CRITICAL ACCURACY RULE: You MUST synthesize specific, hyper-local data points "
+        "(e.g., actual Lucknow regions, realistic ROI percentages, specific budget figures) "
+        "rather than generic placeholders. Ground all your JSON values in the provided strategy context.\n\n"
         f"{_JSON_COMPACTION_DIRECTIVE}"
     )
 
@@ -605,6 +608,34 @@ def critic_node(state: AgentState) -> dict:
 
     logger.debug("CRITIC  ▸  Artifact to evaluate (%s): %.300s", artifact_label, artifact)
 
+    if current == "action_taker":
+        format_rules = (
+            "2. COMPACTION:\n"
+            "   - Is the output STRICTLY raw, machine-parseable JSON?\n"
+            "   - Is there ANY bloated text, conversational filler, greetings,\n"
+            "     sign-offs, or verbose prose outside the JSON object?\n\n"
+            "3. RAW DUMP DETECTION:\n"
+            "   - (EXEMPTION: The Action Taker MUST output JSON. Do NOT penalize it for being JSON.)\n"
+            "   - Are there unprocessed tool outputs or full CSV rows inside the JSON?\n"
+            "   - Is there any data that was NOT properly structured into the JSON schema?\n\n"
+        )
+    else:
+        format_rules = (
+            "2. COMPACTION:\n"
+            "   - Is the output strictly a dense summary?\n"
+            "   - Does it follow the 4-section format (Task Overview, Current State,\n"
+            "     Important Discoveries, Context to Preserve)?\n"
+            "   - Is there ANY bloated text, conversational filler, greetings,\n"
+            "     sign-offs, disclaimers, or verbose prose?\n"
+            "   - Could any sentence be compressed further without losing meaning?\n\n"
+            "3. RAW DUMP DETECTION:\n"
+            "   - Does the artifact contain raw JSON blobs or arrays?\n"
+            "   - Are there unprocessed tool outputs or full CSV rows?\n"
+            "   - Is there raw web scraping content, HTML fragments, or Markdown\n"
+            "     dumps that look copy-pasted from a URL?\n"
+            "   - Is there any data that was NOT synthesized into a compact summary?\n\n"
+        )
+
     system_prompt = (
         "You are a STRICT quality-assurance and token-efficiency gatekeeper "
         "for a multi-agent business accelerator pipeline.\n\n"
@@ -614,19 +645,7 @@ def critic_node(state: AgentState) -> dict:
         "   - Are numbers, percentages, and metrics mathematically sound?\n"
         "   - Does it name specific contacts, competitors, locations, or markets?\n"
         "   - Is it grounded in the original prompt (not generic advice)?\n\n"
-        "2. COMPACTION:\n"
-        "   - Is the output strictly a dense summary?\n"
-        "   - Does it follow the 4-section format (Task Overview, Current State,\n"
-        "     Important Discoveries, Context to Preserve)?\n"
-        "   - Is there ANY bloated text, conversational filler, greetings,\n"
-        "     sign-offs, disclaimers, or verbose prose?\n"
-        "   - Could any sentence be compressed further without losing meaning?\n\n"
-        "3. RAW DUMP DETECTION:\n"
-        "   - Does the artifact contain raw JSON blobs or arrays?\n"
-        "   - Are there unprocessed tool outputs or full CSV rows?\n"
-        "   - Is there raw web scraping content, HTML fragments, or Markdown\n"
-        "     dumps that look copy-pasted from a URL?\n"
-        "   - Is there any data that was NOT synthesized into a compact summary?\n\n"
+        f"{format_rules}"
         "YOUR RESPONSE FORMAT — STRICTLY ONE OF:\n"
         "  • If ALL three checks pass: respond with exactly PASS\n"
         "  • If ANY check fails: respond with FAIL: followed by a concise bullet\n"

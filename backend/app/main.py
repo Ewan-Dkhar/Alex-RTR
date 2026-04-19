@@ -52,9 +52,11 @@ app.include_router(strategy.router, prefix="/api/v1", tags=["Strategy Pipeline"]
 
 # ── Chatbot Route (User requested format) ────────────────────────────
 from pydantic import BaseModel
+from typing import Optional
 
 class ChatRequest(BaseModel):
     message: str
+    thread_id: Optional[str] = None
 
 @app.get("/api/health")
 async def get_health():
@@ -63,37 +65,38 @@ async def get_health():
 @app.post("/api/chat")
 async def chat_route(req: ChatRequest):
     try:
-        from app.services.graph_service import run_graph
-        if len(req.message) < 5:
-            return {"reply": "Please enter a message of at least 5 characters for the AI to analyze."}
-        
-        final_state = run_graph(user_prompt=req.message)
-        plan = final_state.get("final_plan", "I'm sorry, I couldn't generate a plan.")
-        
-        # Extract structured data
+        from app.services.graph_service import run_graph, run_chat
         from app.services.llm_client import get_llm
         from langchain_core.messages import SystemMessage, HumanMessage
         import json
-        llm = get_llm()
-        extract_prompt = f"""Extract the following details from the strategy plan and output ONLY valid JSON.
-Fields required:
-"region": string (the specific area in Lucknow recommended, e.g. "Gomti Nagar", "Hazratganj", defaults to "Gomti Nagar")
-"domain": string (the business sector recommended, e.g. "Food & Beverage", "Retail", defaults to "Food & Beverage")
-"roi": number (extracted ROI percentage, or default 20)
-"demandScore": number (out of 10)
-"growthRate": number (e.g. 0.05 for 5%)
-"budgetAllocation": object with setup, marketing, licenses, property, workingCapital as decimals summing to 1.0
+        import re
 
-Plan text:
-{plan}
-"""
+        if len(req.message) < 5:
+            return {"reply": "Please enter a message of at least 5 characters for the AI to analyze.", "thread_id": req.thread_id}
+
+        llm = get_llm()
+
+        # ── Follow-Up Chat ───────────────────────────────────────────────────
+        if req.thread_id:
+            final_state = run_chat(thread_id=req.thread_id, question=req.message)
+            reply = final_state.get("follow_up_response", "I'm sorry, I couldn't process your follow-up.")
+            return {
+                "reply": reply,
+                "data": None,  # Frontend already has the dashboard data
+                "thread_id": final_state["thread_id"]
+            }
+
+        # ── Initial Pipeline Run ──────────────────────────────────────────────
+        final_state = run_graph(user_prompt=req.message)
+        plan_json_str = final_state.get("final_plan", "{}")
+        thread_id = final_state.get("thread_id")
+
+        # 1. Parse structured data for the dashboard
         try:
-            extraction_res = llm.invoke([SystemMessage(content="You are a strict JSON extractor. Output ONLY valid JSON."), HumanMessage(content=extract_prompt)])
-            import re
-            json_text = re.sub(r'```(?:json)?\s*([\s\S]*?)\s*```', r'\1', extraction_res.content).strip()
+            json_text = re.sub(r'```(?:json)?\s*([\s\S]*?)\s*```', r'\1', plan_json_str).strip()
             data = json.loads(json_text)
         except Exception as e:
-            logger.warning(f"Failed to extract JSON: {e}")
+            logger.warning(f"Failed to extract JSON from Action_Taker output: {e}")
             data = {
                 "region": "Gomti Nagar",
                 "domain": "Food & Beverage",
@@ -105,10 +108,26 @@ Plan text:
                 }
             }
 
-        return {"reply": plan, "data": data}
+        # 2. Generate a friendly conversational reply for the chat UI
+        try:
+            summary_prompt = (
+                "You are a helpful business assistant. A background AI pipeline just analyzed "
+                "the user's request and generated this structured data payload:\n"
+                f"{json.dumps(data)}\n\n"
+                "Write a friendly 2-sentence conversational response to the user. "
+                "Do NOT show the JSON. Tell them you've analyzed the market and they can view "
+                "the insights, ROI, and budget allocation on their dashboard."
+            )
+            chat_res = llm.invoke([SystemMessage(content=summary_prompt)])
+            conversational_reply = chat_res.content.strip()
+        except Exception as e:
+            logger.warning(f"Failed to generate conversational reply: {e}")
+            conversational_reply = "I've analyzed your request! The dashboard has been updated with the latest insights, ROI, and budget allocation for your business."
+
+        return {"reply": conversational_reply, "data": data, "thread_id": thread_id}
     except Exception as e:
         logger.exception("Error in chat_route")
-        return {"reply": f"An error occurred: {str(e)}"}
+        return {"reply": f"An error occurred: {str(e)}", "thread_id": req.thread_id}
 
 logger.info("Alex RTR API initialised — routes mounted ✓")
 

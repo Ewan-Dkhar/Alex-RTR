@@ -113,6 +113,7 @@ export function Chat() {
   const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [dynamicROI, setDynamicROI] = useState<number | null>(null);
   const [dynamicGrowth, setDynamicGrowth] = useState<number | null>(null);
+  const [threadId, setThreadId] = useState<string | null>(null);
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
@@ -194,14 +195,16 @@ export function Chat() {
     setMessages(prev => [...prev, { role: "user", content: input }]);
     const promptText = input; setInput(""); setIsTyping(true);
     try {
-      const response = await fetch(`${API_BASE}/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: promptText }) });
+      const response = await fetch(`${API_BASE}/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: promptText, thread_id: threadId }) });
       if (!response.ok) throw new Error("Backend offline");
       const resData = await response.json();
+      if (resData.thread_id) setThreadId(resData.thread_id);
+      
       setMessages(prev => [...prev, { role: "assistant", content: resData.reply }]);
       if (resData.data) {
         const d = resData.data;
         if (d.domain) { const match = DOMAINS.find(dom => dom.toLowerCase() === d.domain.toLowerCase()); if (match) setSelectedDomain(match); }
-        const budgetUpdate = parseBudget(resData.reply, d);
+        const budgetUpdate = parseBudget(promptText, d);
         if (budgetUpdate.max !== null) { setMinBudget(Math.max(0, Math.min(budgetUpdate.min || 0, budgetUpdate.max))); setMaxBudget(budgetUpdate.max); }
         if (d.roi) setDynamicROI(Number(d.roi));
         if (d.growthRate) setDynamicGrowth(Number(d.growthRate));
@@ -300,7 +303,7 @@ export function Chat() {
                 {!hasValidUserInput && <div className="absolute top-0 right-0 p-2 opacity-[0.03]"><Coins size={60} /></div>}
                 <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><div className="p-1 bg-green-50 rounded-md text-green-600"><BadgeIndianRupee size={14} /></div> Target Budget</div>
                 <div className="text-2xl font-black text-slate-900">
-                  {hasValidUserInput ? `₹${totalCapEx}L` : (
+                  {hasValidUserInput ? `₹${currentRegion ? currentRegion.cost : maxBudget}L` : (
                     <span className="text-slate-300 italic font-medium flex items-center gap-2">₹0L <Wallet size={16} className="text-slate-200" /></span>
                   )}
                 </div>
