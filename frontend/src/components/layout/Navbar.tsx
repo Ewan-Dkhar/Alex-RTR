@@ -13,7 +13,6 @@ export function Navbar() {
     { name: "Home", path: "/" },
     { name: "Demo", path: "/demo" },
     { name: "How It Works", path: "/how-it-works" },
-    { name: "Technology", path: "/technology" },
     { name: "About", path: "/about" },
   ]
 
