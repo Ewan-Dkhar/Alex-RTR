@@ -1,0 +1,19 @@
+location,avg_rent_1BHK,avg_rent_2BHK,avg_rent_3BHK,rent_per_sqft,availability_level,remarks
+Gomti Nagar,8000-15000,14000-25000,24000-50000,12-25,High,Premium area strong demand
+Faizabad Road,6000-12000,12000-20000,20000-35000,10-18,High,Growth corridor affordable rents
+Sultanpur Road,6000-10000,12000-18000,18000-30000,10-16,Medium,Developing rental market
+Indira Nagar,8000-14000,14000-22000,22000-40000,12-22,Medium,Established residential hub
+Sitapur Road,4000-9000,8000-15000,15000-25000,8-14,High,Budget rental zone
+Kursi Road,5000-10000,9000-16000,15000-28000,9-15,High,Affordable and expanding
+Jankipuram,6000-11000,10000-18000,18000-30000,10-16,Medium,Stable demand
+IIM Road,6000-12000,12000-20000,20000-35000,10-18,Medium,Emerging growth area
+Alambagh,7000-13000,12000-20000,20000-32000,11-18,Medium,Good connectivity
+Malhaur,7000-12000,13000-20000,20000-32000,11-18,Medium,Near Gomti Nagar extension
+Bijnor Road,6000-12000,12000-18000,18000-30000,10-16,Medium,Airport side growth
+Kanpur Road,6000-12000,12000-20000,20000-32000,10-18,Medium,Near airport demand
+Raebareli Road,5000-10000,10000-16000,16000-28000,9-15,Medium,Developing outskirts
+Shaheed Path,10000-18000,18000-30000,30000-50000,15-30,Medium,Premium corridor
+Mohanlalganj,4000-8000,8000-14000,14000-25000,8-12,Low,Outer low-demand area
+Chinhat,6000-12000,12000-20000,20000-35000,10-18,High,High supply and demand
+Vikas Nagar,8000-15000,15000-25000,25000-40000,12-22,Medium,Well-developed locality
+Vrindavan Yojna,7000-13000,13000-22000,22000-35000,12-20,Medium,Planned township area

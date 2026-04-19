@@ -1,0 +1,15 @@
+business_type,best_areas,demand_level,avg_rent_range,roi_level,target_customers,reason
+Restaurant/Cafe,Gomti Nagar|Indira Nagar|Hazratganj|Alambagh,High,15000-50000,Medium-High,Students/Professionals,High footfall premium zones
+Street Food/Small Food Stall,Alambagh|Charbagh|Aminabad|Chowk,Very High,5000-15000,High,Mass public/Travelers,Crowded markets transport hubs
+Cloud Kitchen,Chinhat|Jankipuram|Faizabad Road|Kursi Road,High,8000-20000,High,Online delivery users,Low rent high demand residential areas
+Fine Dining,Gomti Nagar|Hazratganj|Shaheed Path,Medium-High,30000-80000,Medium,High income group,Premium locality high spending capacity
+Retail Shop (Clothing),Hazratganj|Aminabad|Indira Nagar|Gomti Nagar,Very High,20000-60000,Medium-High,All segments,Established shopping hubs
+Supermarket/Kirana,Jankipuram|Indira Nagar|Chinhat|Sitapur Road,High,10000-25000,High,Local residents,Daily need dense residential zones
+Warehouse/Storage,Sultanpur Road|Raebareli Road|Mohanlalganj|Bijnor Road,Medium,10000-30000,High,Business logistics,Low land cost large space availability
+Coaching Institute,IIM Road|Aliganj|Indira Nagar|Kapoorthala,Very High,15000-40000,High,Students,Education hubs strong demand
+Gym/Fitness Center,Gomti Nagar|Indira Nagar|Alambagh|Vrindavan Yojna,High,15000-35000,Medium-High,Young population,Health awareness zones
+Salon/Beauty Parlour,Indira Nagar|Gomti Nagar|Alambagh|Chinhat,High,8000-20000,High,Local residents,Repeat customer base
+Medical Clinic,Gomti Nagar|Alambagh|Indira Nagar|Charbagh,High,15000-40000,High,Families/Patients,Accessibility + demand
+Coworking Space,Gomti Nagar|Shaheed Path|Faizabad Road,Medium-High,20000-60000,Medium,Startups/Freelancers,Business hubs growing ecosystem
+Hardware/Construction,Sitapur Road|Kursi Road|Faizabad Road,Medium,10000-25000,High,Builders/Contractors,Development zones demand materials
+Electronics Shop,Hazratganj|Indira Nagar|Alambagh,High,20000-50000,Medium-High,Urban buyers,High purchasing areas
