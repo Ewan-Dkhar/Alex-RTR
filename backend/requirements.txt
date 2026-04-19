@@ -7,31 +7,35 @@ python-dotenv>=1.0.1         # Environment variable support (.env)
 pydantic>=2.6.0
 pydantic-settings>=2.2.0     # For parsing the .env file
 
-# Database (Assuming relational like PostgreSQL or SQLite)
-sqlalchemy>=2.0.29           # The ORM
-alembic>=1.13.1              # Database migration tool (like Prisma migrations)
+# Database
+sqlalchemy>=2.0.29           # ORM (used by existing code)
+alembic>=1.13.1              # Database migration tool
 
-# Security (If you need Authentication/CTF-level hardening)
+# Security
 passlib[bcrypt]>=1.7.4       # Password hashing
-python-jose[cryptography]>=3.3.0 # JWT token generation
+python-jose[cryptography]>=3.3.0  # JWT token generation
 python-multipart>=0.0.9      # Needed if you accept form data or file uploads
 
 # Testing
 pytest>=8.1.1
-httpx>=0.27.0                # Used by FastAPI's TestClient
+httpx>=0.27.0                # Used by FastAPI's TestClient AND web tool (Serper/Firecrawl)
 
-# RAG / Vector Database
-chromadb>=0.5.5
+# Data / Vector
 pandas>=2.2.0
-ollama>=0.3.3
+faiss-cpu>=1.13.0            # In-memory FAISS vector store (Engine 1)
 
 # LangChain + LangGraph (multi-agent orchestration)
 langchain-core>=0.3.0
-langchain-openai>=0.3.0
-langchain-community>=0.4.0
-langchain-ollama>=1.1.0
-langgraph>=0.2.0
-faiss-cpu>=1.13.0
+langchain-openai>=0.3.0      # ChatOpenAI → ngrok → local Qwen2.5
+langchain-community>=0.4.0   # OllamaEmbeddings (nomic-embed-text)
+langchain-ollama>=1.1.0      # OllamaEmbeddings backend
+langgraph>=0.2.0             # Multi-agent graph orchestration
+
+# LangGraph SQLite Checkpointing (persistent state & follow-up threads)
+langgraph-checkpoint-sqlite>=3.0.0
+
+# Web Tools (Engine 3 — Serper, Engine 4 — Firecrawl)
+# httpx is already listed above (dual-purpose: testing + web tool HTTP calls)
 
 # Utilities
 tenacity>=9.0.0

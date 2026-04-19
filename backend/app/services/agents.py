@@ -211,25 +211,59 @@ def researcher_node(state: AgentState) -> dict:
         "1. search_local_contacts(query) — Search local brokers, lawyers, and "
         "   business types in Lucknow. Use for finding relevant contacts.\n"
         "2. query_real_estate_data(location, property_type, max_price_per_sqft) "
-        "   — Query Lucknow real estate data. Use for property prices/trends.\n"
+        "   — Query Lucknow real estate data (static CSV). Use for BASE "
+        "   property prices/trends.\n"
         "3. search_web_serper(query) — Live Google search via Serper. Use to "
         "   find competitor news, Lucknow regulatory updates, market trends, "
         "   or any data not available in local CSVs.\n"
         "4. scrape_website_firecrawl(url) — Read a specific webpage. Use to "
         "   deep-dive into a URL found via search (e.g., government pages, "
         "   competitor websites, market reports).\n\n"
-        "INSTRUCTIONS:\n"
+        "═══════════════════════════════════════════════════════════════\n"
+        "  MANDATORY REASONING SEQUENCE — 'TRUST BUT VERIFY' WORKFLOW\n"
+        "═══════════════════════════════════════════════════════════════\n\n"
+        "Whenever you fetch a base price using query_real_estate_data, you\n"
+        "MUST NOT accept that price as final truth. The CSV data may be stale.\n"
+        "Follow this strict 3-step protocol:\n\n"
+        "STEP 1 — FETCH BASE PRICE:\n"
+        "  Call query_real_estate_data for the target location and property\n"
+        "  type. Record the static base price per sqft internally.\n\n"
+        "STEP 2 — VERIFY WITH LIVE WEB DATA:\n"
+        "  Immediately call search_web_serper with a query formatted as:\n"
+        "  'recent infrastructure development [LOCATION] Lucknow real estate "
+        "news [CURRENT YEAR]'\n"
+        "  Replace [LOCATION] with the actual target location (e.g.,\n"
+        "  'Vibhuti Khand', 'Shaheed Path', 'Gomti Nagar Extension').\n\n"
+        "STEP 3 — DYNAMIC PRICE ADJUSTMENT:\n"
+        "  If the live web search reveals recent major infrastructural\n"
+        "  changes (new highways, metro lines, malls, IT parks, commercial\n"
+        "  hubs, government projects) that would realistically cause prices\n"
+        "  to rise above the static CSV data, you MUST note this discrepancy.\n"
+        "  In your <summary>, under '3. Important Discoveries', you must\n"
+        "  explicitly report:\n"
+        "    • The static base price from the CSV\n"
+        "    • The newly discovered infrastructure news (specific project\n"
+        "      names, dates, sources)\n"
+        "    • A WARNING to the Strategist agent that the actual expected\n"
+        "      rent/buy rate should be dynamically adjusted UPWARD based\n"
+        "      on the live evidence\n"
+        "  If no significant infrastructure changes are found, note that\n"
+        "  the static price appears current and reliable.\n\n"
+        "═══════════════════════════════════════════════════════════════\n\n"
+        "GENERAL INSTRUCTIONS:\n"
         "- Use LOCAL tools first for Lucknow-specific data.\n"
         "- Use WEB tools for live market intelligence, competitor news, or "
         "  regulatory information not in the local CSVs.\n"
-        "- After gathering data, SYNTHESIZE it. Do NOT copy-paste raw tool output.\n"
-        "- CRITICAL: No matter how much data you gather from the web or local "
-        "  CSVs, you must NEVER output raw tool text. Digest ALL data into a "
-        "  single, unified, highly dense summary.\n"
-        "- Produce a hyper-compressed research brief covering: target demographics "
-        "(with specific numbers), competitive landscape (name competitors/brokers), "
-        "market size estimates (price per sqft figures), key local trends "
-        "(with specific locations), and quantified risks or opportunities.\n\n"
+        "- After gathering data, SYNTHESIZE it. Do NOT copy-paste raw tool "
+        "output or raw Serper JSON.\n"
+        "- CRITICAL: Even with the extra web verification step, your final\n"
+        "  output must STILL be strictly compacted into <summary> tags.\n"
+        "  Never leak raw search results, URLs, or JSON.\n"
+        "- Produce a hyper-compressed research brief covering: target "
+        "demographics (with specific numbers), competitive landscape (name "
+        "competitors/brokers), market size estimates (static base price AND "
+        "dynamic adjustment if applicable), key local trends (with specific "
+        "locations), and quantified risks or opportunities.\n\n"
         f"{_COMPACTION_DIRECTIVE}"
     )
 
@@ -504,3 +538,81 @@ def critic_node(state: AgentState) -> dict:
             + (f" (retry #{retry + 1})" if not passed else "")
         ],
     }
+
+
+# =====================================================================
+#  CHAT AGENT NODE  (follow-up questions on existing threads)
+# =====================================================================
+def chat_agent_node(state: AgentState) -> dict:
+    """
+    Answers a follow-up question using the full pipeline context stored
+    in the checkpointed state.
+
+    The chat agent has READ access to:
+      - compact_research
+      - compact_strategy
+      - final_plan
+      - user_prompt (original)
+
+    It does NOT re-run tools. It synthesises an answer from what the
+    pipeline has already produced.
+
+    Inputs read  : follow_up_question, user_prompt, compact_research,
+                   compact_strategy, final_plan
+    Outputs set  : follow_up_response, current_agent, messages
+    """
+    question = state.get("follow_up_question", "")
+
+    logger.debug("=" * 60)
+    logger.debug("CHAT_AGENT NODE  ▸  ENTRY")
+    logger.debug("  follow_up_question : %.200s", question)
+    logger.debug("  user_prompt        : %.200s", state.get("user_prompt", ""))
+    logger.debug("=" * 60)
+
+    system_prompt = (
+        "You are a helpful business advisor answering a follow-up question. "
+        "You have access to the FULL context of a previously completed "
+        "multi-agent business strategy pipeline.\n\n"
+        "CONTEXT PROVIDED:\n"
+        "- Original Business Prompt\n"
+        "- Compressed Research (market data, contacts, pricing)\n"
+        "- Compressed Strategy (value prop, GTM, KPIs)\n"
+        "- Final Action Plan (phased tasks, deadlines, metrics)\n\n"
+        "INSTRUCTIONS:\n"
+        "- Answer the user's follow-up question accurately using ONLY the "
+        "  context provided below.\n"
+        "- Be concise but thorough. Reference specific data points, names, "
+        "  prices, and locations from the context.\n"
+        "- Do NOT hallucinate information not present in the context.\n"
+        "- If the context does not contain enough information to answer, "
+        "  say so clearly.\n"
+        "- Keep your response under 500 words."
+    )
+
+    user_content = (
+        f"ORIGINAL BUSINESS PROMPT:\n{state.get('user_prompt', 'N/A')}\n\n"
+        f"COMPRESSED RESEARCH:\n{state.get('compact_research', 'N/A')}\n\n"
+        f"COMPRESSED STRATEGY:\n{state.get('compact_strategy', 'N/A')}\n\n"
+        f"FINAL ACTION PLAN:\n{state.get('final_plan', 'N/A')}\n\n"
+        f"═══════════════════════════════════════════════════════════════\n"
+        f"USER FOLLOW-UP QUESTION:\n{question}"
+    )
+
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_content),
+    ]
+
+    logger.debug("CHAT_AGENT  ▸  Invoking LLM …")
+    response = _get_llm().invoke(messages)
+    answer = response.content.strip()
+
+    logger.debug("CHAT_AGENT  ▸  Response length: %d chars", len(answer))
+    logger.debug("CHAT_AGENT  ▸  Response preview: %.400s", answer)
+
+    return {
+        "follow_up_response": answer,
+        "current_agent": "chat_agent",
+        "messages": [f"[Chat Agent] Answered follow-up ({len(answer)} chars)"],
+    }
+
