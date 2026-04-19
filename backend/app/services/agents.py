@@ -231,7 +231,7 @@ def researcher_node(state: AgentState) -> dict:
         "STEP 2 — VERIFY WITH LIVE WEB DATA:\n"
         "  Immediately call search_web_serper with a query formatted as:\n"
         "  'recent infrastructure development [LOCATION] Lucknow real estate "
-        "news 2026'\n"
+        "news [CURRENT YEAR]'\n"
         "  Replace [LOCATION] with the actual target location (e.g.,\n"
         "  'Vibhuti Khand', 'Shaheed Path', 'Gomti Nagar Extension').\n\n"
         "STEP 3 — DYNAMIC PRICE ADJUSTMENT:\n"
@@ -538,3 +538,81 @@ def critic_node(state: AgentState) -> dict:
             + (f" (retry #{retry + 1})" if not passed else "")
         ],
     }
+
+
+# =====================================================================
+#  CHAT AGENT NODE  (follow-up questions on existing threads)
+# =====================================================================
+def chat_agent_node(state: AgentState) -> dict:
+    """
+    Answers a follow-up question using the full pipeline context stored
+    in the checkpointed state.
+
+    The chat agent has READ access to:
+      - compact_research
+      - compact_strategy
+      - final_plan
+      - user_prompt (original)
+
+    It does NOT re-run tools. It synthesises an answer from what the
+    pipeline has already produced.
+
+    Inputs read  : follow_up_question, user_prompt, compact_research,
+                   compact_strategy, final_plan
+    Outputs set  : follow_up_response, current_agent, messages
+    """
+    question = state.get("follow_up_question", "")
+
+    logger.debug("=" * 60)
+    logger.debug("CHAT_AGENT NODE  ▸  ENTRY")
+    logger.debug("  follow_up_question : %.200s", question)
+    logger.debug("  user_prompt        : %.200s", state.get("user_prompt", ""))
+    logger.debug("=" * 60)
+
+    system_prompt = (
+        "You are a helpful business advisor answering a follow-up question. "
+        "You have access to the FULL context of a previously completed "
+        "multi-agent business strategy pipeline.\n\n"
+        "CONTEXT PROVIDED:\n"
+        "- Original Business Prompt\n"
+        "- Compressed Research (market data, contacts, pricing)\n"
+        "- Compressed Strategy (value prop, GTM, KPIs)\n"
+        "- Final Action Plan (phased tasks, deadlines, metrics)\n\n"
+        "INSTRUCTIONS:\n"
+        "- Answer the user's follow-up question accurately using ONLY the "
+        "  context provided below.\n"
+        "- Be concise but thorough. Reference specific data points, names, "
+        "  prices, and locations from the context.\n"
+        "- Do NOT hallucinate information not present in the context.\n"
+        "- If the context does not contain enough information to answer, "
+        "  say so clearly.\n"
+        "- Keep your response under 500 words."
+    )
+
+    user_content = (
+        f"ORIGINAL BUSINESS PROMPT:\n{state.get('user_prompt', 'N/A')}\n\n"
+        f"COMPRESSED RESEARCH:\n{state.get('compact_research', 'N/A')}\n\n"
+        f"COMPRESSED STRATEGY:\n{state.get('compact_strategy', 'N/A')}\n\n"
+        f"FINAL ACTION PLAN:\n{state.get('final_plan', 'N/A')}\n\n"
+        f"═══════════════════════════════════════════════════════════════\n"
+        f"USER FOLLOW-UP QUESTION:\n{question}"
+    )
+
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_content),
+    ]
+
+    logger.debug("CHAT_AGENT  ▸  Invoking LLM …")
+    response = _get_llm().invoke(messages)
+    answer = response.content.strip()
+
+    logger.debug("CHAT_AGENT  ▸  Response length: %d chars", len(answer))
+    logger.debug("CHAT_AGENT  ▸  Response preview: %.400s", answer)
+
+    return {
+        "follow_up_response": answer,
+        "current_agent": "chat_agent",
+        "messages": [f"[Chat Agent] Answered follow-up ({len(answer)} chars)"],
+    }
+

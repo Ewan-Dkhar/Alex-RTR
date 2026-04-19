@@ -14,6 +14,8 @@ Design notes  (Context-Compaction Architecture)
   the former ``local_data``, ``strategy``, and ``action_plan`` fields.
 * ``messages`` is an append-only log of short status strings for the UI.
 * ``retry_count`` is maintained per-step by the Critic to cap retries.
+* ``follow_up_question`` / ``follow_up_response`` support human-in-the-loop
+  chat follow-ups via SQLite-checkpointed threads.
 """
 
 from __future__ import annotations
@@ -69,6 +71,12 @@ class AgentState(TypedDict, total=False):
         Running log of human-readable progress messages (append-only).
     tools_output : dict
         Placeholder for structured tool output (will be populated later).
+    follow_up_question : str
+        A follow-up question from the user on an existing thread.
+        When non-empty, the graph routes to the chat_agent instead of
+        the strategy pipeline.
+    follow_up_response : str
+        The chat agent's response to the follow-up question.
     """
 
     user_prompt: Annotated[str, _overwrite]
@@ -81,3 +89,5 @@ class AgentState(TypedDict, total=False):
     retry_count: Annotated[int, _overwrite]
     messages: Annotated[list[str], _append_list]
     tools_output: Annotated[dict, _overwrite]
+    follow_up_question: Annotated[str, _overwrite]
+    follow_up_response: Annotated[str, _overwrite]

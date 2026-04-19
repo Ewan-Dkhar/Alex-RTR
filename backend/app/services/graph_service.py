@@ -4,51 +4,66 @@ services/graph_service.py
 Builds and compiles the LangGraph state machine for the multi-agent
 business-accelerator workflow.
 
+Persistent checkpointing is backed by SQLite so that:
+  • The system can resume from failures without re-running prior agents.
+  • The frontend can ask follow-up questions on an existing thread_id
+    with full context.
+
 Graph topology
 ~~~~~~~~~~~~~~
                 ┌───────────┐
                 │  START     │
                 └─────┬─────┘
                       │
-                ┌─────▼─────┐
-           ┌────│ Researcher │◄──────────────────────┐
-           │    └─────┬─────┘                        │
-           │          │                              │
-           │    ┌─────▼─────┐                        │
-           │    │  Critic    │── FAIL ────────────────┘
-           │    └─────┬─────┘
-           │          │ PASS
-           │    ┌─────▼─────┐
-           │ ┌──│ Strategist │◄──────────────────────┐
-           │ │  └─────┬─────┘                        │
-           │ │        │                              │
-           │ │  ┌─────▼─────┐                        │
-           │ │  │  Critic    │── FAIL ────────────────┘
-           │ │  └─────┬─────┘
-           │ │        │ PASS
-           │ │  ┌─────▼──────┐
-           │ │┌─│Action Taker│◄─────────────────────┐
-           │ ││ └─────┬──────┘                      │
-           │ ││       │                             │
-           │ ││ ┌─────▼─────┐                       │
-           │ ││ │  Critic    │── FAIL ───────────────┘
-           │ ││ └─────┬─────┘
-           │ ││       │ PASS
-           │ ││ ┌─────▼─────┐
-           │ ││ │   END      │
-           │ ││ └───────────┘
+              ┌───────▼───────┐
+              │    router     │  (conditional: follow-up or new pipeline?)
+              └───┬───────┬───┘
+                  │       │
+    follow_up_q? │       │ otherwise
+                  │       │
+          ┌───────▼──┐  ┌─▼──────────┐
+          │chat_agent│  │ Researcher  │◄──────────────────────┐
+          └───┬──────┘  └─────┬──────┘                        │
+              │               │                               │
+              │         ┌─────▼─────┐                         │
+              │         │  Critic    │── FAIL ─────────────────┘
+              │         └─────┬─────┘
+              │               │ PASS
+              │         ┌─────▼─────┐
+              │      ┌──│ Strategist │◄──────────────────────┐
+              │      │  └─────┬─────┘                        │
+              │      │        │                              │
+              │      │  ┌─────▼─────┐                        │
+              │      │  │  Critic    │── FAIL ────────────────┘
+              │      │  └─────┬─────┘
+              │      │        │ PASS
+              │      │  ┌─────▼──────┐
+              │      │┌─│Action Taker│◄─────────────────────┐
+              │      ││ └─────┬──────┘                      │
+              │      ││       │                             │
+              │      ││ ┌─────▼─────┐                       │
+              │      ││ │  Critic    │── FAIL ───────────────┘
+              │      ││ └─────┬─────┘
+              │      ││       │ PASS
+           ┌──▼──────▼▼───────▼──┐
+           │        END          │
+           └─────────────────────┘
 """
 
 from __future__ import annotations
 
 import logging
+import sqlite3
+from pathlib import Path
 
-from langgraph.graph import END, StateGraph
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.graph import END, START, StateGraph
 
 from app.core.config import settings
 from app.models.agent_state import AgentState
 from app.services.agents import (
     action_taker_node,
+    chat_agent_node,
     critic_node,
     researcher_node,
     strategist_node,
@@ -56,12 +71,33 @@ from app.services.agents import (
 
 logger = logging.getLogger(__name__)
 
+
+# ── SQLite Checkpointer ─────────────────────────────────────────────
+_CHECKPOINT_DB = Path(__file__).resolve().parents[2] / "checkpoints.sqlite"
+_db_conn = sqlite3.connect(str(_CHECKPOINT_DB), check_same_thread=False)
+_checkpointer = SqliteSaver(_db_conn)
+logger.info("SQLite checkpointer initialised → %s", _CHECKPOINT_DB)
+
+
 # ── Mapping from an agent name to its "next" agent in the pipeline ───
 _NEXT_AGENT = {
     "researcher": "strategist",
     "strategist": "action_taker",
     "action_taker": END,
 }
+
+
+# =====================================================================
+#  Conditional entry: follow-up → chat_agent, otherwise → researcher
+# =====================================================================
+def _route_entry(state: AgentState) -> str:
+    """Pick the entry path based on whether this is a follow-up or new run."""
+    fq = state.get("follow_up_question", "")
+    if fq and fq.strip():
+        logger.debug("ROUTE_ENTRY  ▸  follow_up_question detected → chat_agent")
+        return "chat_agent"
+    logger.debug("ROUTE_ENTRY  ▸  No follow-up → researcher (new pipeline)")
+    return "researcher"
 
 
 # =====================================================================
@@ -117,11 +153,24 @@ def _build_graph() -> StateGraph:
     graph.add_node("strategist", strategist_node)
     graph.add_node("action_taker", action_taker_node)
     graph.add_node("critic", critic_node)
+    graph.add_node("chat_agent", chat_agent_node)
 
-    logger.debug("Nodes registered: researcher, strategist, action_taker, critic")
+    logger.debug("Nodes registered: researcher, strategist, action_taker, critic, chat_agent")
 
-    # ── Entry point ──────────────────────────────────────────────────
-    graph.set_entry_point("researcher")
+    # ── Conditional entry point ──────────────────────────────────────
+    graph.add_conditional_edges(
+        START,
+        _route_entry,
+        {
+            "researcher": "researcher",
+            "chat_agent": "chat_agent",
+        },
+    )
+
+    logger.debug("Conditional entry: START → researcher | chat_agent")
+
+    # ── Chat agent goes straight to END (no Critic needed) ───────────
+    graph.add_edge("chat_agent", END)
 
     # ── After each worker → always go to Critic ──────────────────────
     graph.add_edge("researcher", "critic")
@@ -129,6 +178,7 @@ def _build_graph() -> StateGraph:
     graph.add_edge("action_taker", "critic")
 
     logger.debug("Edges: researcher→critic, strategist→critic, action_taker→critic")
+    logger.debug("Edge: chat_agent→END")
 
     # ── After Critic → conditional routing ───────────────────────────
     graph.add_conditional_edges(
@@ -147,15 +197,15 @@ def _build_graph() -> StateGraph:
     return graph
 
 
-# ── Compile once at module import ────────────────────────────────────
-_compiled_app = _build_graph().compile()
-logger.info("LangGraph workflow compiled and ready ✓")
+# ── Compile once at module import (with checkpointer) ────────────────
+_compiled_app = _build_graph().compile(checkpointer=_checkpointer)
+logger.info("LangGraph workflow compiled with SQLite checkpointer ✓")
 
 
 # =====================================================================
-#  Public API
+#  Public API — Strategy Pipeline
 # =====================================================================
-def run_graph(user_prompt: str) -> dict:
+def run_graph(user_prompt: str, thread_id: str | None = None) -> dict:
     """
     Execute the full multi-agent pipeline for the given prompt.
 
@@ -163,13 +213,23 @@ def run_graph(user_prompt: str) -> dict:
     ----------
     user_prompt : str
         The business prompt from the end user.
+    thread_id : str | None
+        Optional thread ID for checkpointing. If None, a new UUID is
+        generated so every run is independently checkpointed.
 
     Returns
     -------
     dict
-        The final ``AgentState`` after the graph reaches END.
+        The final ``AgentState`` after the graph reaches END, plus
+        the ``thread_id`` used.
     """
-    logger.info("▶  run_graph invoked  |  prompt=%.120s …", user_prompt)
+    import uuid
+
+    if thread_id is None:
+        thread_id = str(uuid.uuid4())
+
+    logger.info("▶  run_graph invoked  |  thread_id=%s  |  prompt=%.120s …",
+                thread_id, user_prompt)
 
     initial_state: AgentState = {
         "user_prompt": user_prompt,
@@ -182,13 +242,63 @@ def run_graph(user_prompt: str) -> dict:
         "retry_count": 0,
         "messages": [],
         "tools_output": {},
+        "follow_up_question": "",
+        "follow_up_response": "",
     }
+
+    config = {"configurable": {"thread_id": thread_id}}
 
     logger.debug("Initial state prepared: %s", list(initial_state.keys()))
 
-    final_state = _compiled_app.invoke(initial_state)
+    final_state = _compiled_app.invoke(initial_state, config=config)
 
-    logger.info("◀  run_graph complete  |  messages=%d", len(final_state.get("messages", [])))
+    logger.info("◀  run_graph complete  |  thread_id=%s  |  messages=%d",
+                thread_id, len(final_state.get("messages", [])))
     logger.debug("Final state keys: %s", list(final_state.keys()))
 
-    return dict(final_state)
+    result = dict(final_state)
+    result["thread_id"] = thread_id
+    return result
+
+
+# =====================================================================
+#  Public API — Follow-Up Chat
+# =====================================================================
+def run_chat(thread_id: str, question: str) -> dict:
+    """
+    Send a follow-up question to an existing thread.
+
+    The checkpointer loads the saved state (compact_research,
+    compact_strategy, final_plan) and the chat_agent uses it to
+    answer the question.
+
+    Parameters
+    ----------
+    thread_id : str
+        The thread ID returned from a previous ``run_graph`` call.
+    question : str
+        The user's follow-up question.
+
+    Returns
+    -------
+    dict
+        Contains ``follow_up_response``, ``thread_id``, and ``messages``.
+    """
+    logger.info("▶  run_chat invoked  |  thread_id=%s  |  question=%.120s …",
+                thread_id, question)
+
+    # Only set the fields needed to trigger the chat_agent path
+    follow_up_state: AgentState = {
+        "follow_up_question": question,
+        "follow_up_response": "",
+    }
+
+    config = {"configurable": {"thread_id": thread_id}}
+
+    final_state = _compiled_app.invoke(follow_up_state, config=config)
+
+    logger.info("◀  run_chat complete  |  thread_id=%s", thread_id)
+
+    result = dict(final_state)
+    result["thread_id"] = thread_id
+    return result
