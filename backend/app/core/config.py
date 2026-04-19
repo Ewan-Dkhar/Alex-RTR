@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     )
 
     # ── LLM ──────────────────────────────────────────────────────────────
-    ngrok_url: str = "https://PLACEHOLDER.ngrok-free.app/v1"
+    ngrok_url: str = "https://57a6-117-219-22-193.ngrok-free.app/v1"
     llm_model: str = "qwen2.5:7b"
     llm_temperature: float = 0.4
 

@@ -11,7 +11,7 @@ export function Navbar() {
 
   const links = [
     { name: "Home", path: "/" },
-    { name: "Demo", path: "/demo" },
+    { name: "Chat", path: "/chat" },
     { name: "How It Works", path: "/how-it-works" },
     { name: "About", path: "/about" },
   ]
@@ -49,9 +49,6 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex">
-            <Link to="/demo">
-              <Button size="md" className="rounded-full px-6 font-bold tracking-wide">Get Started</Button>
-            </Link>
           </div>
 
           <button 
@@ -83,9 +80,6 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 px-3">
-                <Link to="/demo" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full">Get Started</Button>
-                </Link>
               </div>
             </div>
           </motion.div>

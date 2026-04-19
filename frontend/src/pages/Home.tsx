@@ -49,16 +49,10 @@ export function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
-                <Link to="/demo">
-                  <Button size="lg" className="w-full sm:w-auto group rounded-full px-8 py-4">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
                 <Link to="/how-it-works">
                   <Button variant="secondary" size="lg" className="w-full sm:w-auto rounded-full px-8 py-4 bg-white/50 backdrop-blur-sm border-[rgba(37,99,235,0.1)]">
                     <Play className="mr-2 h-4 w-4" fill="currentColor" />
-                    Watch Demo
+                    Try AI Chat
                   </Button>
                 </Link>
               </div>
@@ -307,9 +301,9 @@ export function Home() {
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Ready to launch your idea?</h2>
           <p className="text-xl text-slate-600 mb-10">Stop guessing. Get your localized launch roadmap today.</p>
-          <Link to="/demo">
+          <Link to="/chat">
             <Button size="lg" className="rounded-full px-10 py-4 shadow-[0_8px_20px_rgba(37,99,235,0.4)] text-lg">
-              Try Live Demo
+              Start AI Chat
             </Button>
           </Link>
         </div>

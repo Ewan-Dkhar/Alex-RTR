@@ -86,10 +86,7 @@ export function About() {
         >
           {team.map((member, i) => (
             <motion.div key={i} variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }}>
-              <Card variant="raised" className="h-[400px] text-center bg-white flex flex-col items-center hover:-translate-y-2 transition-transform duration-300 border-0 shadow-[0_8px_30px_rgba(37,99,235,0.04)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] py-12">
-                <div className="w-32 h-32 bg-gradient-to-br from-blue-50 to-[#F8FAFF] rounded-full border border-blue-50 flex items-center justify-center mb-8 text-blue-500 font-bold text-4xl shadow-inner">
-                  {member.name.charAt(0)}
-                </div>
+              <Card variant="raised" className="h-[250px] text-center bg-white flex flex-col items-center justify-center hover:-translate-y-2 transition-transform duration-300 border-0 shadow-[0_8px_30px_rgba(37,99,235,0.04)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] p-8">
                 <h3 className="text-xl font-bold text-slate-900 mb-2">{member.name}</h3>
                 <p className="text-slate-500 font-medium text-sm mb-6">{member.role}</p>
                 <div className="mt-auto w-3/4 h-2 bg-slate-50 rounded-full" />
