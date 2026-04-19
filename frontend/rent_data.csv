@@ -1,0 +1,108 @@
+region,avg_rent_2bhk,avg_rent_3bhk,price_band,growth_5yr_percent,demand_level,infrastructure_score,zone_type,roi_category,best_for
+Gomti Nagar,28000,45000,High,55,High,9,Premium,Medium,Offices|Retail
+Gomti Nagar Extension,22000,35000,Medium-High,65,High,8,Growth,High,Startups|Rental Business
+Indira Nagar,25000,40000,High,45,High,8,Residential,Medium,Shops|Clinics
+Mahanagar,35000,60000,Very High,40,Medium,9,Premium,Medium,Luxury Offices
+Hazratganj,45000,80000,Very High,35,Very High,10,Commercial Core,Medium,Luxury Living|Retail
+Aliganj,22000,35000,Medium-High,40,High,7,Developed,Medium,Coaching|Retail
+Jankipuram,15000,22000,Medium,35,High,6,Residential,Medium,Local Shops
+Kursi Road,12000,18000,Low-Medium,50,High,6,Budget Growth,High,Affordable Housing
+Sitapur Road,10000,15000,Low,45,High,5,Budget,Medium,Kirana|Low-cost Living
+Chinhat,18000,28000,Medium,60,High,7,Growth,High,Shops|Cloud Kitchen
+Malhaur,20000,30000,Medium,65,Medium,7,Growth,High,Residential|Retail
+Bijnor Road,16000,25000,Medium,60,Medium,7,Industrial Growth,High,Logistics Workers
+Raebareli Road,12000,18000,Low-Medium,38,Medium,6,Developing,Medium,Warehousing Staff
+Kanpur Road,14000,20000,Medium,40,Medium,7,Developing,Medium,Transport Business
+Shaheed Path,30000,50000,High,55,High,10,Premium Growth,High,Corporate Living
+Sultanpur Road,18000,28000,Medium,70,Medium,9,Growth,High,Expansion Living
+Faizabad Road,14000,22000,Low-Medium,50,High,8,Growth,High,Mixed Business
+Transport Nagar,16000,24000,Medium,35,Medium,7,Industrial,High,Workers Housing
+Alambagh,18000,26000,Medium,30,High,8,Developed,Medium,Retail|Transport
+Charbagh,22000,35000,Medium-High,35,Very High,9,Commercial Core,Medium,Hotels|Rental
+Aminabad,24000,38000,Medium-High,32,Very High,8,Commercial Core,Medium,Clothing|Retail
+Chowk,20000,32000,Medium,28,High,7,Old Commercial,Medium,Traditional Living
+Kaiserbagh,21000,34000,Medium,30,High,8,Commercial Core,Medium,Offices|Residential
+Vrindavan Yojna,20000,32000,Medium,45,Medium,8,Planned,Medium,Residential|Offices
+Rajajipuram,14000,20000,Medium,30,High,6,Residential,Medium,Local Shops
+Ashiyana,18000,26000,Medium,40,Medium,7,Residential,Medium,Residential Business
+Krishna Nagar,17000,25000,Medium,38,Medium,7,Residential,Medium,Local Retail
+Dubagga,12000,18000,Low-Medium,30,Medium,5,Developing,Medium,Affordable Living
+Mohanlalganj,8000,12000,Low,70,Low,5,Outer Growth,High,Low-cost Investment
+Gosainganj,9000,14000,Low,65,Low,5,Outer Growth,High,Industrial Housing
+Bakshi Ka Talab,10000,15000,Low-Medium,60,Medium,6,Growth,High,Warehouse Living
+Safedabad,16000,24000,Medium,68,Medium,7,Growth,High,Residential Expansion
+Tiwariganj,15000,23000,Medium,66,Medium,7,Growth,High,Investment Living
+Uattardhona,14000,22000,Medium,62,Medium,7,Growth,High,Residential
+Takrohi,17000,25000,Medium,55,Medium,6,Residential,Medium,Shops
+Munshi Pulia,20000,30000,Medium,50,High,7,Developed,Medium,Local Shops
+Kalyanpur,18000,26000,Medium,48,High,6,Residential,Medium,Local Business
+Vikas Nagar,26000,42000,High,35,Medium,7,Premium,Low,Residential
+Nishatganj,25000,40000,Medium-High,32,Medium,7,Developed,Medium,Retail
+Nawabganj,14000,20000,Medium,30,Medium,6,Residential,Medium,Local Shops
+Balaganj,12000,18000,Low-Medium,28,Medium,5,Old City,Medium,Traditional Living
+Deva Road,15000,23000,Medium,60,Medium,7,Growth,High,Investment Living
+Amity University Road,18000,28000,Medium,65,Medium,7,Growth,High,Student Housing
+Kapoorthala,26000,42000,Medium-High,35,High,8,Commercial,Medium,Retail Living
+Indraprastha,15000,22000,Medium,50,Medium,6,Residential,Medium,Local Shops
+Anora Kala,16000,24000,Medium,60,Medium,7,Growth,High,Residential Growth
+Matiyari,15000,23000,Medium,58,Medium,7,Growth,High,Investment Living
+Ismailganj,14000,21000,Medium,55,Medium,6,Developing,Medium,Residential
+Vibhuti Khand,35000,60000,Very High,60,High,10,Premium Commercial,High,Corporate Living
+Vineet Khand,32000,55000,Very High,55,High,9,Premium,High,Luxury Residential
+Viraj Khand,33000,58000,Very High,58,High,9,Premium,High,High-end Living
+Gomti Nagar Phase 2,30000,48000,High,58,High,9,Premium,Medium,Corporate Living
+Gomti Nagar Phase 3,29000,46000,High,60,High,9,Premium,Medium,Residential
+Gomti Nagar Phase 4,28000,45000,High,62,High,9,Premium Growth,High,Investment Living
+Vibhuti Khand Extension,36000,62000,Very High,62,High,10,Premium Commercial,High,Corporate Living
+Patrakarpuram,32000,52000,High,50,High,9,Commercial,Medium,Cafes|Retail Living
+Kathauta Lake Area,30000,50000,High,52,High,9,Premium,Medium,Restaurants|Living
+Janeshwar Mishra Park Area,32000,55000,High,55,High,9,Premium,High,Commercial Living
+DLF Garden City,26000,42000,High,55,Medium,8,Planned,High,Residential
+Omaxe Residency,24000,38000,High,52,Medium,8,Planned,Medium,Housing
+Eldeco Greens,23000,36000,High,50,Medium,8,Planned,Medium,Residential
+South City,22000,34000,Medium,48,Medium,7,Planned,Medium,Housing
+South City Phase 2,21000,33000,Medium,50,Medium,7,Planned,Medium,Residential
+Golf City Extension,25000,38000,High,55,Medium,8,Planned,Medium,Residential
+Sushant Golf City Extension,26000,40000,High,65,Medium,8,Planned Growth,High,Investment Living
+Ansal API,25000,39000,High,55,Medium,8,Planned Growth,High,Residential
+Ansal Sushant,26000,42000,High,60,Medium,8,Planned Growth,High,Residential
+Kukrail,20000,30000,Medium,50,Medium,7,Growth,High,Residential Expansion
+Kukrail Extension,21000,32000,Medium,52,Medium,7,Growth,High,Housing
+Engineering College Road,22000,34000,Medium,50,High,7,Growth,High,Student Housing
+Tedhi Pulia,23000,35000,Medium-High,48,High,7,Developed,Medium,Shops|Living
+Kalyanpur Extension,19000,28000,Medium,52,High,6,Growth,High,Affordable Housing
+Jankipuram Extension,18000,27000,Medium,55,Medium,6,Growth,High,Residential
+Jankipuram Extension Phase 2,17000,26000,Medium,58,Medium,6,Growth,High,Housing
+Hardoi Road,14000,20000,Low-Medium,45,Medium,6,Developing,Medium,Transport Living
+Hardoi Bypass,12000,18000,Low,55,Low,6,Outer Growth,High,Warehouse Workers
+Sitapur Bypass,11000,17000,Low,50,Low,5,Outer Growth,Medium,Low-cost Housing
+Faizabad Bypass,15000,22000,Medium,60,Medium,7,Growth,High,Investment Living
+Sultanpur Bypass,16000,25000,Medium,68,Medium,8,Growth,High,Expansion Living
+Raebareli Bypass,13000,19000,Low-Medium,55,Low,6,Outer Growth,High,Industrial Housing
+Airport Road,22000,35000,Medium,60,High,9,Airport Zone,High,Hotels|Living
+Amausi Extension,18000,27000,Medium,50,Medium,7,Growth,High,Industrial Housing
+Sarojini Nagar Phase 2,17000,26000,Medium,60,Medium,7,Growth,High,Residential
+Sarojini Nagar Phase 3,16000,25000,Medium,62,Medium,7,Growth,High,Housing
+Transport Nagar Extension,19000,28000,Medium,40,Medium,8,Industrial,Medium,Logistics Housing
+Kanpur Road Extension,15000,22000,Medium,45,Medium,7,Developing,Medium,Transport Living
+Raebareli Road Extension,14000,20000,Low-Medium,40,Medium,6,Developing,Medium,Warehouse Living
+Bijnor Extension,18000,27000,Medium,55,Medium,7,Industrial Growth,High,Logistics Housing
+Malhaur Extension,22000,32000,Medium,65,Medium,7,Growth,High,Residential
+Chinhat Extension Phase 2,21000,31000,Medium,70,High,7,Growth,High,Shops|Living
+Chinhat Extension Phase 3,20000,30000,Medium,72,High,7,Growth,High,Investment Living
+Deva Road Extension,18000,27000,Medium,62,Medium,7,Growth,High,Residential Growth
+Matiyari Extension,17000,26000,Medium,60,Medium,7,Growth,High,Housing
+Anora Extension,18000,28000,Medium,65,Medium,7,Growth,High,Residential
+Safedabad Extension,20000,30000,Medium,70,Medium,7,Growth,High,Expansion Living
+Tiwariganj Extension,19000,29000,Medium,68,Medium,7,Growth,High,Investment Living
+Uattardhona Extension,18000,27000,Medium,64,Medium,7,Growth,High,Residential
+Gomti Riverfront Area,38000,65000,Very High,55,High,10,Premium,High,Luxury Living
+Riverfront Extension,36000,62000,Very High,58,High,10,Premium,High,Tourism Living
+Butler Colony,40000,70000,Very High,30,Medium,9,Premium,Low,Luxury Residential
+Cantt Area,35000,60000,High,35,High,9,Premium,Medium,Residential
+Cantonment Extension,33000,58000,High,38,High,9,Premium,Medium,Housing
+Dilkusha,36000,62000,Very High,32,Medium,9,Premium,Low,Residential
+La Martiniere Area,38000,65000,Very High,40,High,9,Premium,Medium,Institutions Living
+Sapru Marg,42000,75000,Very High,50,Very High,10,Commercial Core,Medium,Corporate Living
+MG Road,40000,72000,Very High,48,Very High,10,Commercial Core,Medium,Retail Living
+Park Road,38000,68000,Very High,45,High,9,Commercial,Medium,Offices|Living

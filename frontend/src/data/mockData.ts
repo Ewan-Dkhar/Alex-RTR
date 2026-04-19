@@ -70,17 +70,16 @@ export const mockFAQs = [
   }
 ];
 
-export const mockHeatmapData = [
-  { id: 1, name: 'Plot A (Gomti N.)', cost: 12, roi: 8, type: 'commercial' },
-  { id: 2, name: 'Plot B (Hazratganj)', cost: 25, roi: 15, type: 'retail' },
-  { id: 3, name: 'Plot C (Indira N.)', cost: 18, roi: 12, type: 'commercial' },
-  { id: 4, name: 'Plot D (Aliganj)', cost: 35, roi: 22, type: 'retail' },
-  { id: 5, name: 'Plot E (Aminabad)', cost: 15, roi: 9, type: 'commercial' },
-  { id: 6, name: 'Plot F (Chowk)', cost: 40, roi: 25, type: 'retail' },
-  { id: 7, name: 'Plot G (Mahanagar)', cost: 20, roi: 14, type: 'commercial' },
-  { id: 8, name: 'Plot H (Gomti N. Ext)', cost: 28, roi: 18, type: 'retail' },
-  { id: 9, name: 'Plot I (Ashiyana)', cost: 10, roi: 6, type: 'commercial' },
-  { id: 10, name: 'Plot J (Kapoorthala)', cost: 30, roi: 19, type: 'retail' },
-  { id: 11, name: 'Plot K (Vikas N.)', cost: 22, roi: 13, type: 'commercial' },
-  { id: 12, name: 'Plot L (Jankipuram)', cost: 14, roi: 8, type: 'commercial' }
+import heatmapDataFromJson from './mockHeatmapData.json';
+export const mockHeatmapData = heatmapDataFromJson;
+
+export const mockAvailableLands = [
+  { id: 101, regionId: 1, title: 'Corner Plot near Market', size: '1500 sqft', price: '₹45L', type: 'Commercial', status: 'Available' },
+  { id: 102, regionId: 1, title: 'Main Road Frontage', size: '2000 sqft', price: '₹60L', type: 'Commercial', status: 'Under Negotiation' },
+  { id: 103, regionId: 2, title: 'Residential Land', size: '1200 sqft', price: '₹35L', type: 'Residential', status: 'Available' },
+  { id: 104, regionId: 3, title: 'Highway Touch Plot', size: '5000 sqft', price: '₹1.5Cr', type: 'Industrial', status: 'Available' },
+  { id: 105, regionId: 4, title: 'Warehouse Space', size: '10000 sqft', price: '₹2.5Cr', type: 'Industrial', status: 'Available' },
+  { id: 106, regionId: 5, title: 'Developing Zone Plot', size: '2500 sqft', price: '₹40L', type: 'Mixed Use', status: 'Available' },
+  { id: 107, regionId: 39, title: 'Premium Commercial Spot', size: '1000 sqft', price: '₹2Cr', type: 'Commercial', status: 'Available' },
+  { id: 108, regionId: 38, title: 'Coaching Center Space', size: '3000 sqft', price: '₹1.8Cr', type: 'Commercial', status: 'Under Negotiation' }
 ];
