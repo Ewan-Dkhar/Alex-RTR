@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Send, MapPin, Building2, BadgeIndianRupee, TrendingUp, Download, Map, X, ExternalLink, ShoppingCart, GraduationCap, Building, Activity, Bookmark, Star, ArrowRightLeft, Trash2 } from "lucide-react"
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ComposedChart, Line, CartesianGrid } from 'recharts'
+import { Send, MapPin, Building2, BadgeIndianRupee, TrendingUp, Download, Map, X, ExternalLink, ShoppingCart, GraduationCap, Building, Activity, Bookmark, Star, ArrowRightLeft, Trash2, LayoutDashboard, Search, Sparkles, Wallet, PieChart, BarChart3, Coins, Layers, MousePointerClick } from "lucide-react"
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ComposedChart, Line, CartesianGrid } from 'recharts'
 import { Card } from "../components/ui/Card"
 import { Button } from "../components/ui/Button"
 import { mockBusinessData } from "../data/lucknowBusinessROI"
@@ -15,42 +15,20 @@ import remarkGfm from 'remark-gfm'
 const COLORS = ['#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE', '#DBEAFE', '#1D4ED8'];
 
 const DOMAINS = [
-  "Food & Beverage",
-  "Retail",
-  "Salon & Beauty",
-  "Gym & Fitness",
-  "Pharmacy",
-  "Clinic & Diagnostics",
-  "Coaching & Education",
-  "Coworking & Office",
-  "Logistics & Warehouse",
-  "Tourism & Hospitality"
+  "Food & Beverage", "Retail", "Salon & Beauty", "Gym & Fitness", "Pharmacy", 
+  "Clinic & Diagnostics", "Coaching & Education", "Coworking & Office", 
+  "Logistics & Warehouse", "Tourism & Hospitality"
 ];
 
 const domainKeyMap: Record<string, string> = {
-  "Food & Beverage": "roi_food_beverage",
-  "Retail": "roi_retail",
-  "Salon & Beauty": "roi_salon_beauty",
-  "Gym & Fitness": "roi_gym_fitness",
-  "Pharmacy": "roi_pharmacy",
-  "Clinic & Diagnostics": "roi_clinic_diagnostics",
-  "Coaching & Education": "roi_coaching_education",
-  "Coworking & Office": "roi_coworking_office",
-  "Logistics & Warehouse": "roi_logistics_warehouse",
-  "Tourism & Hospitality": "roi_tourism_hospitality"
+  "Food & Beverage": "roi_food_beverage", "Retail": "roi_retail", "Salon & Beauty": "roi_salon_beauty", "Gym & Fitness": "roi_gym_fitness",
+  "Pharmacy": "roi_pharmacy", "Clinic & Diagnostics": "roi_clinic_diagnostics", "Coaching & Education": "roi_coaching_education",
+  "Coworking & Office": "roi_coworking_office", "Logistics & Warehouse": "roi_logistics_warehouse", "Tourism & Hospitality": "roi_tourism_hospitality"
 };
 
 const DOMAIN_AREA_MAP: Record<string, number> = {
-  "Food & Beverage": 1200,
-  "Retail": 900,
-  "Salon & Beauty": 700,
-  "Gym & Fitness": 2000,
-  "Pharmacy": 500,
-  "Clinic & Diagnostics": 1000,
-  "Coaching & Education": 1800,
-  "Coworking & Office": 2500,
-  "Logistics & Warehouse": 5000,
-  "Tourism & Hospitality": 3000
+  "Food & Beverage": 1200, "Retail": 900, "Salon & Beauty": 700, "Gym & Fitness": 2000, "Pharmacy": 500,
+  "Clinic & Diagnostics": 1000, "Coaching & Education": 1800, "Coworking & Office": 2500, "Logistics & Warehouse": 5000, "Tourism & Hospitality": 3000
 };
 
 const BUDGET_MODELS: Record<string, any> = {
@@ -94,8 +72,42 @@ function MapRefocus({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
+// --- Premium Placeholder Components ---
+
+const PremiumPlaceholder = ({ icon: Icon, title, subtitle, badgeText, colorClass = "blue" }: any) => {
+  const colorMap: any = {
+    blue: "from-blue-50 to-white text-blue-500 bg-blue-50",
+    orange: "from-orange-50 to-white text-orange-500 bg-orange-50",
+    purple: "from-purple-50 to-white text-purple-500 bg-purple-50",
+    indigo: "from-indigo-50 to-white text-indigo-500 bg-indigo-50"
+  };
+
+  return (
+    <div className={`flex flex-col items-center justify-center h-full text-center p-6 relative overflow-hidden bg-gradient-to-br ${colorMap[colorClass]}`}>
+      <div className="absolute top-0 right-0 p-4 opacity-10"><Icon size={120} /></div>
+      <motion.div 
+        animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }} 
+        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+        className={`w-16 h-16 ${colorMap[colorClass].split(' ').pop()} rounded-2xl flex items-center justify-center shadow-sm border border-white/50 mb-4 z-10 relative`}
+      >
+        <Icon size={32} className="drop-shadow-sm" />
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full flex items-center justify-center border border-gray-100">
+          <Sparkles size={8} className="text-amber-400 fill-amber-400" />
+        </div>
+      </motion.div>
+      <div className="z-10">
+        <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/80 border border-gray-100 text-gray-500 mb-3 inline-block shadow-sm">
+          {badgeText}
+        </div>
+        <h4 className="text-lg font-black text-slate-800 tracking-tight leading-tight mb-1">{title}</h4>
+        <p className="text-[11px] text-slate-500 font-medium max-w-[200px] leading-relaxed mx-auto">{subtitle}</p>
+      </div>
+    </div>
+  );
+};
+
 export function Chat() {
-  const [messages, setMessages] = useState([{ role: "assistant", content: "Hi! I'm your Alex-RTR assistant. What local business idea do you want to explore?" }]);
+  const [messages, setMessages] = useState([{ role: "assistant", content: "Hi! I'm your Alex-RTR assistant. Start by telling me your business idea and your budget (e.g., 'I want to open a gym in Lucknow with 50 Lakhs')." }]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
@@ -104,79 +116,55 @@ export function Chat() {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/health`)
-      .then(res => res.json())
-      .then(data => { if(data.status === "ok") setConnectionStatus("connected"); else setConnectionStatus("disconnected"); })
-      .catch(() => setConnectionStatus("disconnected"));
+    fetch(`${API_BASE}/api/health`).then(res => res.json()).then(data => { if(data.status === "ok") setConnectionStatus("connected"); else setConnectionStatus("disconnected"); }).catch(() => setConnectionStatus("disconnected"));
   }, []);
   
-  const [minBudget, setMinBudget] = useState<number>(20);
-  const [maxBudget, setMaxBudget] = useState<number>(80);
+  const [minBudget, setMinBudget] = useState<number>(0);
+  const [maxBudget, setMaxBudget] = useState<number>(0);
   const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
-  const [selectedDomain, setSelectedDomain] = useState<string>("Food & Beverage");
+  const [selectedDomain, setSelectedDomain] = useState<string>(""); 
   const [mapCenter, setMapCenter] = useState<[number, number]>([26.8467, 80.9462]);
   const [mapZoom, setMapZoom] = useState<number>(11);
-
-  // Required Fix 1: Add Global State for Comparison
   const [compareList, setCompareList] = useState<any[]>([]);
+
+  const hasValidUserInput = useMemo(() => selectedDomain !== "" && maxBudget > 0, [selectedDomain, maxBudget]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => setMinBudget(Number(e.target.value));
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => setMaxBudget(Number(e.target.value));
 
   const processedData = useMemo(() => {
+    if (!selectedDomain) return [];
     const assumedArea = DOMAIN_AREA_MAP[selectedDomain] || 1000;
     return mockBusinessData.map((loc: any) => {
       const costLakhs = (loc.avg_price_per_sqft * assumedArea) / 100000;
-      return {
-        ...loc,
-        name: loc.region,
-        cost: parseFloat(costLakhs.toFixed(2)),
-        roi: loc[domainKeyMap[selectedDomain]] as number,
-        type: loc.best_domain
-      };
+      return { ...loc, name: loc.region, cost: parseFloat(costLakhs.toFixed(2)), roi: loc[domainKeyMap[selectedDomain]] as number, type: loc.best_domain };
     });
   }, [selectedDomain]);
 
   const filteredLocations = useMemo(() => {
+    if (!hasValidUserInput) return [];
     let filtered = processedData.filter((p: any) => p.cost >= minBudget && p.cost <= maxBudget);
     filtered.sort((a: any, b: any) => b.roi - a.roi);
     return filtered;
-  }, [processedData, minBudget, maxBudget]);
+  }, [processedData, minBudget, maxBudget, hasValidUserInput]);
 
   const topLocations = filteredLocations.slice(0, 5);
   const currentRegion = selectedLocation || (filteredLocations.length > 0 ? filteredLocations[0] : null);
 
-  // Required Fix 2: Toggle Comparison logic
-  const toggleCompare = (location: any) => {
-    setCompareList(prev => {
-      const exists = prev.find(p => p.id === location.id);
-      if (exists) return prev.filter(p => p.id !== location.id);
-      if (prev.length >= 4) return prev;
-      return [...prev, location];
-    });
-  };
-
   const budgetAllocation = useMemo(() => {
+    if (!hasValidUserInput) return [];
     const totalBudget = currentRegion ? currentRegion.cost : maxBudget;
     const model = BUDGET_MODELS[selectedDomain] || BUDGET_MODELS["Retail"];
     const mapping = [
-      { key: 'equipment_setup', name: 'Equipment & Setup' },
-      { key: 'initial_marketing', name: 'Initial Marketing' },
-      { key: 'licenses_permits', name: 'Licenses & Permits' },
-      { key: 'property_acquisition', name: 'Property Acquisition' },
-      { key: 'registry_stamp_duty', name: 'Registry & Stamp Duty' },
-      { key: 'working_capital', name: 'Working Capital' }
+      { key: 'equipment_setup', name: 'Equipment & Setup' }, { key: 'initial_marketing', name: 'Initial Marketing' },
+      { key: 'licenses_permits', name: 'Licenses & Permits' }, { key: 'property_acquisition', name: 'Property Acquisition' },
+      { key: 'registry_stamp_duty', name: 'Registry & Stamp Duty' }, { key: 'working_capital', name: 'Working Capital' }
     ];
-    return mapping.map(item => ({
-      name: item.name,
-      value: parseFloat((totalBudget * (model[item.key] || 0)).toFixed(2)),
-      percent: Math.round((model[item.key] || 0) * 100)
-    }));
-  }, [selectedDomain, currentRegion, maxBudget]);
-
-  const totalCapEx = currentRegion ? currentRegion.cost : maxBudget;
+    return mapping.map(item => ({ name: item.name, value: parseFloat((totalBudget * (model[item.key] || 0)).toFixed(2)), percent: Math.round((model[item.key] || 0) * 100) }));
+  }, [selectedDomain, currentRegion, maxBudget, hasValidUserInput]);
 
   const businessGrowthData = useMemo(() => {
+    if (!hasValidUserInput) return { projection: [], total6MonthROI: 0 };
     const projectionRoi = dynamicROI ?? (currentRegion ? currentRegion.roi : 15);
     const growthRate = dynamicGrowth ?? 0.05;
     const investment = currentRegion ? currentRegion.cost : maxBudget;
@@ -190,14 +178,21 @@ export function Chat() {
       projection.push({ month: `M${m}`, revenue: parseFloat(monthlyRevLakhs.toFixed(2)), profit: parseFloat(monthlyProfitLakhs.toFixed(2)) });
     }
     return { projection, total6MonthROI: investment > 0 ? ((cumulativeProfit / investment) * 100).toFixed(1) : 0 };
-  }, [currentRegion, maxBudget, dynamicROI, dynamicGrowth]);
+  }, [currentRegion, maxBudget, dynamicROI, dynamicGrowth, hasValidUserInput]);
+
+  const toggleCompare = (location: any) => {
+    setCompareList(prev => {
+      const exists = prev.find(p => p.id === location.id);
+      if (exists) return prev.filter(p => p.id !== location.id);
+      if (prev.length >= 4) return prev;
+      return [...prev, location];
+    });
+  };
 
   const handleSend = async () => {
     if(!input.trim()) return;
     setMessages(prev => [...prev, { role: "user", content: input }]);
-    const promptText = input;
-    setInput("");
-    setIsTyping(true);
+    const promptText = input; setInput(""); setIsTyping(true);
     try {
       const response = await fetch(`${API_BASE}/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: promptText }) });
       if (!response.ok) throw new Error("Backend offline");
@@ -215,8 +210,7 @@ export function Chat() {
           if (locMatch) {
             const area = DOMAIN_AREA_MAP[d.domain || selectedDomain] || 1000;
             setSelectedLocation({ ...locMatch, name: locMatch.region, cost: parseFloat(((locMatch.avg_price_per_sqft * area) / 100000).toFixed(2)), roi: locMatch[domainKeyMap[d.domain || selectedDomain]] || locMatch.roi_food_beverage });
-            setMapCenter([locMatch.lat, locMatch.lng]);
-            setMapZoom(13);
+            setMapCenter([locMatch.lat, locMatch.lng]); setMapZoom(13);
           }
         }
       }
@@ -230,9 +224,11 @@ export function Chat() {
           <div><h1 className="text-3xl font-bold text-gray-900 tracking-tight">Venture Dashboard</h1><p className="text-gray-500 mt-1">Smart Business Decision Tool</p></div>
           <div className="flex gap-4">
             <div className="flex items-center gap-2"><label className="text-sm font-semibold text-gray-700">Business Domain:</label>
-              <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">{DOMAINS.map(domain => <option key={domain} value={domain}>{domain}</option>)}</select>
+              <select value={selectedDomain} onChange={(e) => setSelectedDomain(e.target.value)} className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+                <option value="">Select Domain...</option>
+                {DOMAINS.map(domain => <option key={domain} value={domain}>{domain}</option>)}
+              </select>
             </div>
-            {/* Required Fix 11: Compare Badge */}
             <Button variant="outline" className={`hidden sm:flex gap-2 bg-white ${compareList.length > 0 ? 'border-blue-500 text-blue-600' : ''}`} onClick={() => { if(compareList.length >= 2) document.getElementById('comparison-panel')?.scrollIntoView({ behavior: 'smooth' }); }}>
               <ArrowRightLeft size={16} /> Compare ({compareList.length})
             </Button>
@@ -243,21 +239,33 @@ export function Chat() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 flex flex-col gap-6 h-[800px]">
             <Card variant="raised" className="flex flex-col p-0 overflow-hidden bg-white max-h-[350px]">
-              <div className="p-4 border-b border-gray-100 bg-[#F8FAFF] shrink-0"><div className="font-bold text-slate-900 flex items-center gap-2"><Star className="text-amber-500 fill-amber-500" size={18} /> Top 5 Recommendations</div><p className="text-xs text-slate-500 mt-1">Best areas for {selectedDomain}</p></div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                <AnimatePresence>
-                  {topLocations.map((loc: any, i: number) => (
-                    <motion.div key={loc.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}>
-                      <div onClick={() => { setSelectedLocation(loc); setMapCenter([loc.lat, loc.lng]); setMapZoom(13); }} className={`p-3 rounded-2xl border transition-all cursor-pointer ${currentRegion?.id === loc.id ? 'border-blue-500 bg-blue-50/30 shadow-md' : 'border-gray-100 hover:border-blue-200 hover:bg-[#F8FAFF]'}`}>
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2.5"><div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">{i + 1}</div><h4 className="font-bold text-slate-900 text-sm tracking-tight">{loc.name}</h4></div>
-                          <span className={`text-xs font-extrabold ${loc.roi >= 22 ? 'text-orange-600' : 'text-blue-600'}`}>{loc.roi}% ROI</span>
-                        </div>
-                        <div className="text-xs text-gray-500 flex justify-between items-center"><span>Est. Cost: <strong className="text-gray-800">₹{loc.cost}L</strong></span><span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">Area: {DOMAIN_AREA_MAP[selectedDomain]} sqft</span></div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              <div className="p-4 border-b border-gray-100 bg-[#F8FAFF] shrink-0"><div className="font-bold text-slate-900 flex items-center gap-2"><Star className="text-amber-500 fill-amber-500" size={18} /> Top 5 Recommendations</div><p className="text-xs text-slate-500 mt-1">Best areas for your selection</p></div>
+              <div className="flex-1 overflow-y-auto">
+                {!hasValidUserInput ? (
+                  <PremiumPlaceholder 
+                    icon={Star} 
+                    badgeText="AI Ready" 
+                    title="Unlock Recommendations" 
+                    subtitle="Ask the AI or select filters to see high-potential business areas" 
+                    colorClass="orange"
+                  />
+                ) : (
+                  <div className="p-4 space-y-3">
+                    <AnimatePresence>
+                      {topLocations.map((loc: any, i: number) => (
+                        <motion.div key={loc.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}>
+                          <div onClick={() => { setSelectedLocation(loc); setMapCenter([loc.lat, loc.lng]); setMapZoom(13); }} className={`p-3 rounded-2xl border transition-all cursor-pointer ${currentRegion?.id === loc.id ? 'border-blue-500 bg-blue-50/30 shadow-md' : 'border-gray-100 hover:border-blue-200 hover:bg-[#F8FAFF]'}`}>
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex items-center gap-2.5"><div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">{i + 1}</div><h4 className="font-bold text-slate-900 text-sm tracking-tight">{loc.name}</h4></div>
+                              <span className={`text-xs font-extrabold ${loc.roi >= 22 ? 'text-orange-600' : 'text-blue-600'}`}>{loc.roi}% ROI</span>
+                            </div>
+                            <div className="text-xs text-gray-500 flex justify-between items-center"><span>Est. Cost: <strong className="text-gray-800">₹{loc.cost}L</strong></span><span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">Area: {DOMAIN_AREA_MAP[selectedDomain]} sqft</span></div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -267,114 +275,192 @@ export function Chat() {
                 <AnimatePresence>{messages.map((msg, i) => (<motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`p-3 rounded-2xl max-w-[85%] text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-sm shadow-sm' : 'bg-gray-100 text-gray-800 rounded-tl-sm'}`}><ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown></div></motion.div>))}</AnimatePresence>
                 {isTyping && <div className="flex justify-start"><div className="bg-gray-100 p-3 rounded-2xl flex gap-1"><span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" /><span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75" /><span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150" /></div></div>}
               </div>
-              <div className="p-4 border-t border-gray-100 bg-white shrink-0"><form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about budgets or regions..." className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /><Button type="submit" size="sm" className="rounded-xl px-4 py-2.5 h-auto"><Send size={16} /></Button></form></div>
+              <div className="p-4 border-t border-gray-100 bg-white shrink-0"><form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="e.g. Find me a Gym in Gomti Nagar for 40L" className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /><Button type="submit" size="sm" className="rounded-xl px-4 py-2.5 h-auto"><Send size={16} /></Button></form></div>
             </Card>
           </div>
 
           <div className="lg:col-span-2 space-y-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Card variant="raised" className="p-5 flex flex-col justify-center"><div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><div className="p-1 bg-blue-50 rounded-md text-blue-600"><MapPin size={14} /></div> Selected Area</div><div className="text-2xl font-black text-slate-900 truncate">{currentRegion?.name || 'Search Region'}</div><div className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md self-start mt-3">{selectedDomain}</div></Card>
-              <Card variant="raised" className="p-5 flex flex-col justify-center"><div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><div className="p-1 bg-green-50 rounded-md text-green-600"><BadgeIndianRupee size={14} /></div> Target Budget</div><div className="text-2xl font-black text-slate-900">₹{totalCapEx}L</div><div className="text-[11px] font-medium text-slate-400 self-start mt-3">Range: {minBudget}L - {maxBudget}L</div></Card>
-              <Card variant="raised" className="p-5 flex flex-col justify-center sm:col-span-1 col-span-2 border border-orange-50 relative overflow-hidden"><div className="absolute top-0 right-0 p-2"><TrendingUp size={24} className="text-orange-100/30" /></div><div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 z-10"><TrendingUp size={14} className="text-orange-500"/> Projected ROI</div><div className="text-2xl font-black text-slate-900 z-10">{currentRegion?.roi}% <span className="text-sm font-medium text-slate-400 ml-2">Potential</span></div><div className="text-[11px] text-orange-600 font-bold bg-orange-50 px-2.5 py-1 rounded-md self-start mt-3 z-10">{currentRegion?.roi >= 22 ? 'Excellent' : 'Stable'} Opportunity</div></Card>
+              <Card variant="raised" className="p-5 flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-white to-blue-50/10 border-blue-100/20">
+                {!hasValidUserInput && <div className="absolute top-0 right-0 p-2 opacity-[0.03]"><MapPin size={60} /></div>}
+                <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><div className="p-1 bg-blue-50 rounded-md text-blue-600"><MapPin size={14} /></div> Selected Area</div>
+                <div className="text-2xl font-black text-slate-900 truncate">
+                  {hasValidUserInput ? (currentRegion?.name || 'Processing...') : (
+                    <span className="text-slate-300 italic font-medium flex items-center gap-2">Choose Area <MousePointerClick size={16} className="text-slate-200" /></span>
+                  )}
+                </div>
+                <div className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md self-start mt-3">
+                  {selectedDomain ? selectedDomain : (
+                    <span className="flex items-center gap-1 opacity-50"><Layers size={10} /> Domain Pending</span>
+                  )}
+                </div>
+              </Card>
+
+              <Card variant="raised" className="p-5 flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-white to-green-50/10 border-green-100/20">
+                {!hasValidUserInput && <div className="absolute top-0 right-0 p-2 opacity-[0.03]"><Coins size={60} /></div>}
+                <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><div className="p-1 bg-green-50 rounded-md text-green-600"><BadgeIndianRupee size={14} /></div> Target Budget</div>
+                <div className="text-2xl font-black text-slate-900">
+                  {hasValidUserInput ? `₹${totalCapEx}L` : (
+                    <span className="text-slate-300 italic font-medium flex items-center gap-2">₹0L <Wallet size={16} className="text-slate-200" /></span>
+                  )}
+                </div>
+                <div className="text-[11px] font-medium text-slate-400 self-start mt-3">
+                  {hasValidUserInput ? `Range: ${minBudget}L - ${maxBudget}L` : (
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[9px] font-bold uppercase">Needs Budget</span>
+                  )}
+                </div>
+              </Card>
+
+              <Card variant="raised" className="p-5 flex flex-col justify-center sm:col-span-1 col-span-2 border border-orange-100/20 relative overflow-hidden bg-gradient-to-br from-white to-orange-50/10">
+                <div className="absolute top-0 right-0 p-2"><TrendingUp size={24} className="text-orange-100/30" /></div>
+                <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 z-10"><TrendingUp size={14} className="text-orange-500"/> Projected ROI</div>
+                <div className="text-2xl font-black text-slate-900 z-10">
+                  {hasValidUserInput ? `${currentRegion?.roi}%` : (
+                    <span className="text-slate-300 italic font-medium">-- %</span>
+                  )}
+                </div>
+                <div className="text-[11px] text-orange-600 font-bold bg-orange-50 px-2.5 py-1 rounded-md self-start mt-3 z-10">
+                  {!hasValidUserInput ? (
+                    <span className="flex items-center gap-1 uppercase tracking-tighter text-[9px]">Awaiting Selection</span>
+                  ) : (currentRegion?.roi >= 22 ? 'Excellent' : 'Stable') + ' Opportunity'}
+                </div>
+              </Card>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[320px]">
-              <Card variant="raised" className="p-5 flex flex-col h-full"><h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2"><Building2 size={16}/> Budget Allocation</h3><div className="flex-1 min-h-0"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={budgetAllocation} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" nameKey="name">{budgetAllocation.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip formatter={(value: any, name: any, props: any) => [`₹${value}L (${props.payload.percent}%)`, `${name} (of ₹${currentRegion?.cost || maxBudget}L)`]} /><Legend layout="vertical" verticalAlign="middle" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px' }} formatter={(value, entry: any) => (<span className="text-gray-700">{value} <span className="text-blue-600 font-bold">{entry.payload.percent}%</span> — ₹{entry.payload.value}L</span>)} /></PieChart></ResponsiveContainer></div></Card>
-              <Card variant="raised" className="p-5 flex flex-col h-full relative"><div className="flex justify-between items-start mb-4"><h3 className="font-semibold text-gray-800 flex items-center gap-2"><TrendingUp size={16}/> 6-Month Projection</h3><div className="text-right"><div className="text-[10px] text-gray-500 font-semibold">EST. ROI</div><div className="text-sm font-bold text-blue-600">{businessGrowthData.total6MonthROI}%</div></div></div><div className="flex-1 min-h-0"><ResponsiveContainer width="100%" height="100%"><ComposedChart data={businessGrowthData.projection} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}><XAxis dataKey="month" tick={{fontSize: 10}} axisLine={false} tickLine={false} /><YAxis yAxisId="left" tick={{fontSize: 10}} axisLine={false} tickLine={false} /><YAxis yAxisId="right" orientation="right" hide /><Tooltip formatter={(value: any, name: any) => [`₹${value}L`, name === 'revenue' ? 'Revenue' : 'Profit']} /><Bar yAxisId="left" dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} name="Revenue" /><Line yAxisId="right" type="monotone" dataKey="profit" stroke="#F59E0B" strokeWidth={3} name="Profit" /></ComposedChart></ResponsiveContainer></div></Card>
+              <Card variant="raised" className="p-0 flex flex-col h-full overflow-hidden bg-white">
+                <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-800 flex items-center gap-2"><Building2 size={16}/> Budget Allocation</h3>
+                  {!hasValidUserInput && <span className="px-2 py-1 rounded-full bg-blue-50 text-blue-500 text-[9px] font-black uppercase tracking-widest border border-blue-100/50">Needs Domain</span>}
+                </div>
+                <div className="flex-1 min-h-0">
+                  {!hasValidUserInput ? (
+                    <PremiumPlaceholder 
+                      icon={Wallet} 
+                      badgeText="Insights Pending" 
+                      title="Allocation Logic" 
+                      subtitle="Choose a domain to unlock domain-specific budget allocation insights" 
+                      colorClass="blue"
+                    />
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart><Pie data={budgetAllocation} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" nameKey="name">{budgetAllocation.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip formatter={(value: any, name: any, props: any) => [`₹${value}L (${props.payload.percent}%)`, `${name} (of ₹${currentRegion?.cost || maxBudget}L)`]} /><Legend layout="vertical" verticalAlign="middle" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px' }} formatter={(value, entry: any) => (<span className="text-gray-700">{value} <span className="text-blue-600 font-bold">{entry.payload.percent}%</span> — ₹{entry.payload.value}L</span>)} /></RechartsPieChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </Card>
+              
+              <Card variant="raised" className="p-0 flex flex-col h-full relative overflow-hidden bg-white">
+                <div className="p-5 pb-0 shrink-0 flex justify-between items-start mb-0">
+                  <h3 className="font-semibold text-gray-800 flex items-center gap-2"><TrendingUp size={16}/> 6-Month Projection</h3>
+                  {hasValidUserInput ? (
+                    <div className="text-right"><div className="text-[10px] text-gray-500 font-semibold">EST. ROI</div><div className="text-sm font-bold text-blue-600">{businessGrowthData.total6MonthROI}%</div></div>
+                  ) : (
+                    <span className="px-2 py-1 rounded-full bg-orange-50 text-orange-500 text-[9px] font-black uppercase tracking-widest border border-orange-100/50">No Data</span>
+                  )}
+                </div>
+                <div className="flex-1 min-h-0">
+                  {!hasValidUserInput ? (
+                    <PremiumPlaceholder 
+                      icon={BarChart3} 
+                      badgeText="Awaiting Data" 
+                      title="Growth Forecast" 
+                      subtitle="Add your budget and select a domain to see 6-month growth projections" 
+                      colorClass="orange"
+                    />
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={businessGrowthData.projection} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}><XAxis dataKey="month" tick={{fontSize: 10}} axisLine={false} tickLine={false} /><YAxis yAxisId="left" tick={{fontSize: 10}} axisLine={false} tickLine={false} /><YAxis yAxisId="right" orientation="right" hide /><Tooltip formatter={(value: any, name: any) => [`₹${value}L`, name === 'revenue' ? 'Revenue' : 'Profit']} /><Bar yAxisId="left" dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} name="Revenue" /><Line yAxisId="right" type="monotone" dataKey="profit" stroke="#F59E0B" strokeWidth={3} name="Profit" /></ComposedChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </Card>
             </div>
 
-            <Card variant="raised" className="p-5 flex flex-col">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3"><h3 className="font-semibold text-gray-800 flex items-center gap-2"><Map size={16}/> ROI Heatmap</h3><div className="flex items-center gap-3 print:hidden"><div className="flex items-center gap-2 text-sm"><label className="text-gray-500 font-medium">Min:</label><input type="number" value={minBudget} onChange={handleMinChange} className="w-20 px-2 py-1.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" /></div><div className="flex items-center gap-2 text-sm"><label className="text-gray-500 font-medium">Max:</label><input type="number" value={maxBudget} onChange={handleMaxChange} className="w-20 px-2 py-1.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" /></div></div></div>
-              <div className="relative h-[500px] w-full rounded-xl overflow-hidden border border-gray-100 z-0">
+            <Card variant="raised" className="p-5 flex flex-col bg-white">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3"><h3 className="font-semibold text-gray-800 flex items-center gap-2"><Map size={16}/> ROI Heatmap</h3><div className="flex items-center gap-3 print:hidden"><div className="flex items-center gap-2 text-sm"><label className="text-gray-500 font-medium">Min:</label><input type="number" value={minBudget} onChange={handleMinChange} className="w-20 px-2 py-1.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-gray-200" /></div><div className="flex items-center gap-2 text-sm"><label className="text-gray-500 font-medium">Max:</label><input type="number" value={maxBudget} onChange={handleMaxChange} className="w-20 px-2 py-1.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-gray-200" /></div></div></div>
+              <div className="relative h-[500px] w-full rounded-2xl overflow-hidden border border-gray-100 z-0 bg-gray-50/50 shadow-inner">
                 <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: '100%', width: '100%' }}>
                   <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" attribution='&copy; <a href="https://carto.com/">Carto</a>' />
                   <MapRefocus center={mapCenter} zoom={mapZoom} />
-                  {filteredLocations.map((plot: any) => {
+                  {hasValidUserInput && filteredLocations.map((plot: any) => {
                     const isSelected = currentRegion?.id === plot.id;
-                    // Required Fix 3: Visual Feedback for Comparison
                     const isComparing = compareList.some(p => p.id === plot.id);
-                    const isHigh = plot.roi >= 22;
-                    const isMedium = plot.roi >= 15 && plot.roi < 22;
+                    const isHigh = plot.roi >= 22; const isMedium = plot.roi >= 15 && plot.roi < 22;
                     let markerColor = '#3B82F6'; let fillColor = '#60A5FA';
                     if (isHigh) { markerColor = '#DC2626'; fillColor = '#F87171'; } else if (isMedium) { markerColor = '#D97706'; fillColor = '#FBBF24'; }
                     return (
                       <CircleMarker key={plot.id} center={[plot.lat, plot.lng]} radius={isSelected ? 18 : (isComparing ? 16 : (isHigh ? 14 : 12))} eventHandlers={{ click: () => { setSelectedLocation(plot); setMapCenter([plot.lat, plot.lng]); }}} pathOptions={{ color: isComparing ? '#8B5CF6' : (isSelected ? '#1E3A8A' : markerColor), fillColor: isComparing ? '#A78BFA' : fillColor, fillOpacity: isHigh ? 0.9 : 0.7, weight: (isSelected || isComparing) ? 4 : 2, dashArray: isComparing ? "5, 5" : undefined }}>
-                        <Popup><div className="p-1 min-w-[200px]"><h4 className="font-bold text-gray-900">{plot.name}</h4><p className="text-xs text-gray-500 mb-2">{selectedDomain}</p><div className="flex justify-between text-xs mb-1"><span>ROI:</span> <span className="font-bold text-blue-600">{plot.roi}%</span></div><div className="flex justify-between text-xs mb-3"><span>Cost:</span> <span className="font-bold">₹{plot.cost}L</span></div>
-                        {/* Required Fix 2 & 9: Updated Popup Button */}
-                        <Button 
-                          variant={isComparing ? "outline" : "primary"} 
-                          size="sm" 
-                          className={`w-full h-9 text-[11px] font-bold ${isComparing ? 'border-red-500 text-red-600 hover:bg-red-50' : ''}`} 
-                          onClick={() => toggleCompare(plot)}
-                        >
-                          {isComparing ? "Remove from Compare" : "Add to Compare"}
-                        </Button>
-                        </div></Popup>
+                        <Popup><div className="p-1 min-w-[200px]"><h4 className="font-bold text-gray-900">{plot.name}</h4><p className="text-xs text-gray-500 mb-2">{selectedDomain}</p><div className="flex justify-between text-xs mb-1"><span>ROI:</span> <span className="font-bold text-blue-600">{plot.roi}%</span></div><div className="flex justify-between text-xs mb-3"><span>Cost:</span> <span className="font-bold">₹{plot.cost}L</span></div><Button variant={isComparing ? "outline" : "primary"} size="sm" className={`w-full h-9 text-[11px] font-bold ${isComparing ? 'border-red-500 text-red-600 hover:bg-red-50' : ''}`} onClick={() => toggleCompare(plot)}>{isComparing ? "Remove from Compare" : "Add to Compare"}</Button></div></Popup>
                       </CircleMarker>
                     );
                   })}
+                  {!hasValidUserInput && (
+                    <div className="absolute inset-0 z-[1000] bg-white/40 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
+                      <div className="bg-white/95 p-8 rounded-3xl shadow-2xl border border-blue-100/50 text-center max-w-sm animate-in fade-in zoom-in duration-500 pointer-events-auto relative overflow-hidden">
+                        <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl" />
+                        <Map className="text-blue-500 mx-auto mb-4 drop-shadow-sm" size={40} />
+                        <h4 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Interactive Heatmap</h4>
+                        <p className="text-xs text-slate-500 leading-relaxed px-4">Choose filters or ask the chatbot to visualize business hotspots in Lucknow. The data will reveal ROI layers automatically.</p>
+                        <div className="mt-6 flex justify-center gap-1">
+                          <div className="w-1.5 h-1.5 bg-blue-200 rounded-full" /><div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" /><div className="w-1.5 h-1.5 bg-blue-200 rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </MapContainer>
               </div>
-              <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center text-[10px] text-gray-400 gap-3">
-                <span className="font-medium uppercase tracking-wider">Heatmap Active: ₹{minBudget}L - ₹{maxBudget}L</span>
-                <div className="flex gap-4 items-center bg-gray-50 px-3 py-1.5 rounded-full text-gray-500 font-bold"><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-blue-400 rounded-full"></div> LOW</span><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-yellow-400 rounded-full"></div> MID</span><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-red-400 rounded-full"></div> HIGH ROI</span></div>
-              </div>
+              {hasValidUserInput && (
+                <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center text-[10px] text-gray-400 gap-3 italic">
+                  <span className="font-bold uppercase tracking-wider text-slate-400">Sync Active — Showing locations within ₹{minBudget}L - ₹{maxBudget}L for {selectedDomain}</span>
+                  <div className="flex gap-4 items-center bg-gray-50 px-3 py-1.5 rounded-full text-gray-500 font-bold border border-gray-100/50 shadow-sm"><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-blue-400 rounded-full"></div> LOW</span><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-yellow-400 rounded-full"></div> MID</span><span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-red-400 rounded-full"></div> HIGH ROI</span></div>
+                </div>
+              )}
             </Card>
 
-            {/* Required Fix 4, 5, 6, 7: Comparison Panel */}
-            {compareList.length >= 2 && (
+            {compareList.length > 0 ? (
               <motion.div id="comparison-panel" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
-                <Card variant="raised" className="p-6 border-t-4 border-blue-600 bg-white">
+                <Card variant="raised" className="p-6 border-t-4 border-blue-600 bg-white shadow-[0_20px_50px_rgba(37,99,235,0.06)]">
                   <div className="flex justify-between items-center mb-6">
-                    <div><h3 className="text-xl font-black text-slate-900 flex items-center gap-2"><ArrowRightLeft className="text-blue-600" size={24} /> Location Comparison</h3><p className="text-sm text-slate-500 mt-1">Comparing {compareList.length} selected areas in {selectedDomain}</p></div>
-                    <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 gap-2" onClick={() => setCompareList([])}><Trash2 size={16}/> Clear Selections</Button>
+                    <div><h3 className="text-xl font-black text-slate-900 flex items-center gap-2"><ArrowRightLeft className="text-blue-600" size={24} /> Location Comparison</h3><p className="text-sm text-slate-500 mt-1">Comparing {compareList.length} selected areas</p></div>
+                    <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 gap-2 font-bold px-4" onClick={() => setCompareList([])}><Trash2 size={16}/> Clear All</Button>
                   </div>
                   
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                    {/* Required Fix 5: Comparison Table */}
-                    <div className="overflow-x-auto rounded-xl border border-gray-100">
-                      <table className="w-full text-sm text-left">
-                        <thead>
-                          <tr className="bg-gray-50/50 border-b border-gray-100">
-                            <th className="py-4 px-4 font-bold text-slate-700">Region</th>
-                            <th className="py-4 px-4 font-bold text-slate-700">ROI %</th>
-                            <th className="py-4 px-4 font-bold text-slate-700">Cost (₹L)</th>
-                            <th className="py-4 px-4 font-bold text-slate-700">Demand</th>
-                            <th className="py-4 px-4 font-bold text-slate-700">Infra</th>
-                            <th className="py-4 px-4 text-center"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {compareList.map(item => (
-                            <tr key={item.id} className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors">
-                              <td className="py-4 px-4 font-bold text-slate-900">{item.name}</td>
-                              <td className="py-4 px-4 text-blue-600 font-black">{item.roi}%</td>
-                              <td className="py-4 px-4 font-medium">₹{item.cost}L</td>
-                              <td className="py-4 px-4"><span className={`px-2 py-1 rounded-md text-[10px] font-bold ${item.demand_level?.includes('High') ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>{item.demand_level || 'N/A'}</span></td>
-                              <td className="py-4 px-4 font-medium">{item.infrastructure_score}/10</td>
-                              <td className="py-4 px-4 text-center"><button onClick={() => toggleCompare(item)} className="p-1.5 hover:bg-red-50 text-red-400 hover:text-red-600 rounded-lg transition-colors"><Trash2 size={18}/></button></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  {compareList.length < 2 ? (
+                    <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-blue-100/50 rounded-2xl bg-blue-50/20 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10"><MousePointerClick size={80} className="text-blue-600" /></div>
+                      <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md mb-4 border border-blue-50">
+                        <ArrowRightLeft className="text-blue-300" size={24} />
+                      </div>
+                      <h4 className="text-base font-bold text-slate-700 mb-1">Pick another location</h4>
+                      <p className="text-xs text-slate-400 font-medium max-w-[200px] text-center">Add at least 2 locations from the map to see side-by-side analysis</p>
                     </div>
-
-                    {/* Required Fix 6: Chart Comparison */}
-                    <div className="h-[300px] p-4 bg-gray-50/30 rounded-xl border border-gray-100">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">ROI Comparison (%)</h4>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={compareList} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                          <XAxis dataKey="name" tick={{fontSize: 10, fontWeight: 700}} axisLine={false} tickLine={false} angle={-15} textAnchor="end" />
-                          <YAxis tick={{fontSize: 10}} axisLine={false} tickLine={false} />
-                          <Tooltip cursor={{fill: 'rgba(59, 130, 246, 0.05)'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
-                          <Bar dataKey="roi" fill="#3B82F6" radius={[6, 6, 0, 0]} barSize={40} name="ROI Potential" />
-                        </BarChart>
-                      </ResponsiveContainer>
+                  ) : (
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                      <div className="overflow-x-auto rounded-xl border border-gray-100 bg-white">
+                        <table className="w-full text-sm text-left">
+                          <thead><tr className="bg-gray-50/50 border-b border-gray-100"><th className="py-4 px-4 font-bold text-slate-700">Region</th><th className="py-4 px-4 font-bold text-slate-700">ROI %</th><th className="py-4 px-4 font-bold text-slate-700">Cost (₹L)</th><th className="py-4 px-4 font-bold text-slate-700">Demand</th><th className="py-4 px-4 font-bold text-slate-700">Infra</th><th className="py-4 px-4 text-center"></th></tr></thead>
+                          <tbody>{compareList.map(item => (<tr key={item.id} className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors"><td className="py-4 px-4 font-bold text-slate-900">{item.name}</td><td className="py-4 px-4 text-blue-600 font-black">{item.roi}%</td><td className="py-4 px-4 font-medium">₹{item.cost}L</td><td className="py-4 px-4"><span className={`px-2 py-1 rounded-md text-[10px] font-bold ${item.demand_level?.includes('High') ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>{item.demand_level || 'N/A'}</span></td><td className="py-4 px-4 font-medium">{item.infrastructure_score}/10</td><td className="py-4 px-4 text-center"><button onClick={() => toggleCompare(item)} className="p-1.5 hover:bg-red-50 text-red-400 hover:text-red-600 rounded-lg transition-colors"><Trash2 size={18}/></button></td></tr>))}</tbody>
+                        </table>
+                      </div>
+                      <div className="h-[300px] p-6 bg-slate-50/40 rounded-xl border border-slate-100 shadow-inner">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"><Activity size={12} className="text-blue-400" /> Comparison ROI Analysis (%)</h4>
+                        <ResponsiveContainer width="100%" height="100%"><BarChart data={compareList} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" /><XAxis dataKey="name" tick={{fontSize: 9, fontWeight: 800, fill: '#64748b'}} axisLine={false} tickLine={false} angle={-15} textAnchor="end" /><YAxis tick={{fontSize: 9, fontWeight: 600, fill: '#94a3b8'}} axisLine={false} tickLine={false} /><Tooltip cursor={{fill: 'rgba(59, 130, 246, 0.05)'}} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)', padding: '12px'}} /> <Bar dataKey="roi" fill="#3B82F6" radius={[6, 6, 0, 0]} barSize={36} name="ROI Potential" /></BarChart></ResponsiveContainer>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </Card>
               </motion.div>
+            ) : (
+              <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-2xl bg-white/40 relative overflow-hidden group hover:bg-white/60 transition-colors">
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-slate-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 6 }} className="mb-4 p-4 bg-white rounded-3xl shadow-sm border border-slate-50 relative z-10">
+                  <ArrowRightLeft className="text-slate-200" size={36} />
+                </motion.div>
+                <div className="px-3 py-1 rounded-full bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest border border-slate-100 mb-3 z-10">No Comparison Yet</div>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest z-10">Choose locations to compare</p>
+                <p className="text-[10px] text-slate-300 mt-1 z-10 italic">Select markers on map to start side-by-side analysis</p>
+              </div>
             )}
           </div>
         </div>
