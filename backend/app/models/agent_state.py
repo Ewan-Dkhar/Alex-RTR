@@ -16,6 +16,9 @@ Design notes  (Context-Compaction Architecture)
 * ``retry_count`` is maintained per-step by the Critic to cap retries.
 * ``follow_up_question`` / ``follow_up_response`` support human-in-the-loop
   chat follow-ups via SQLite-checkpointed threads.
+* ``chat_history`` stores actual Q&A conversation turns (overwrite-reduced
+  so that the summariser can truncate old turns).
+* ``summary`` holds a rolling compressed summary of older chat turns.
 """
 
 from __future__ import annotations
@@ -77,6 +80,12 @@ class AgentState(TypedDict, total=False):
         the strategy pipeline.
     follow_up_response : str
         The chat agent's response to the follow-up question.
+    chat_history : list[str]
+        Actual Q&A conversation turns for the follow-up chat path.
+        Uses overwrite semantics so the summariser can truncate old turns.
+    summary : str
+        Rolling compressed summary of older chat history turns.
+        Injected into the chat agent's context to maintain continuity.
     """
 
     user_prompt: Annotated[str, _overwrite]
@@ -91,3 +100,5 @@ class AgentState(TypedDict, total=False):
     tools_output: Annotated[dict, _overwrite]
     follow_up_question: Annotated[str, _overwrite]
     follow_up_response: Annotated[str, _overwrite]
+    chat_history: Annotated[list[str], _overwrite]
+    summary: Annotated[str, _overwrite]

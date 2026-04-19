@@ -26,10 +26,10 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # ── LLM ──────────────────────────────────────────────────────────────
-    ngrok_url: str = "https://PLACEHOLDER.ngrok-free.app/v1"
-    llm_model: str = "qwen2.5:7b"
-    llm_temperature: float = 0.4
+    # ── Groq LLM ─────────────────────────────────────────────────────────
+    groq_api_key: str = ""
+    groq_api_key_1: str = ""
+    groq_api_key_2: str = ""
 
     # ── Critic ───────────────────────────────────────────────────────────
     max_critic_retries: int = 2
@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # ── Web Tools ────────────────────────────────────────────────────────
     serper_api_key: str = ""
     firecrawl_api_key: str = ""
+
+    # ── Memory Management ────────────────────────────────────────────────
+    message_summary_threshold: int = 6  # Summarize chat_history when > N turns
 
     # ── Logging ──────────────────────────────────────────────────────────
     log_level: str = "DEBUG"

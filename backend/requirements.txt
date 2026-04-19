@@ -26,9 +26,10 @@ faiss-cpu>=1.13.0            # In-memory FAISS vector store (Engine 1)
 
 # LangChain + LangGraph (multi-agent orchestration)
 langchain-core>=0.3.0
-langchain-openai>=0.3.0      # ChatOpenAI → ngrok → local Qwen2.5
-langchain-community>=0.4.0   # OllamaEmbeddings (nomic-embed-text)
-langchain-ollama>=1.1.0      # OllamaEmbeddings backend
+langchain-groq>=0.3.0              # ChatGroq — Groq API (primary LLM backend)
+langchain-openai>=0.3.0            # Kept for compatibility (no longer primary)
+langchain-community>=0.4.0         # OllamaEmbeddings (nomic-embed-text)
+langchain-ollama>=1.1.0            # OllamaEmbeddings backend
 langgraph>=0.2.0             # Multi-agent graph orchestration
 
 # LangGraph SQLite Checkpointing (persistent state & follow-up threads)

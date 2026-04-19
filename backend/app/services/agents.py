@@ -34,7 +34,8 @@ from typing import Any
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
 from app.models.agent_state import AgentState
-from app.services.llm_client import get_llm
+from app.services.llm_client import get_llm, get_llm_models
+from app.core.config import settings
 from app.services.tools import (
     RESEARCHER_TOOL_LIST,
     search_local_contacts,
@@ -59,12 +60,19 @@ def _get_llm():
 
 
 def _get_researcher_llm():
-    """Return the LLM with Researcher tools bound via bind_tools."""
+    """Return the LLM with Researcher tools bound via bind_tools.
+
+    Because ``RunnableWithFallbacks`` does not expose ``.bind_tools()``,
+    we bind tools on each individual ChatGroq model and then assemble
+    a tool-equipped fallback chain.
+    """
     global _llm_with_tools
     if _llm_with_tools is None:
-        base = get_llm()
-        _llm_with_tools = base.bind_tools(RESEARCHER_TOOL_LIST)
-        logger.debug("Researcher LLM bound with tools: %s",
+        primary, backups = get_llm_models()
+        tool_primary = primary.bind_tools(RESEARCHER_TOOL_LIST)
+        tool_backups = [b.bind_tools(RESEARCHER_TOOL_LIST) for b in backups]
+        _llm_with_tools = tool_primary.with_fallbacks(tool_backups)
+        logger.debug("Researcher LLM bound with tools (fallback chain): %s",
                       [t.name for t in RESEARCHER_TOOL_LIST])
     return _llm_with_tools
 
@@ -89,33 +97,106 @@ _TOOL_MAP = {
 #  SHARED COMPACTION DIRECTIVE (injected into every agent's system prompt)
 # =====================================================================
 _COMPACTION_DIRECTIVE = """
-MANDATORY OUTPUT FORMAT — STRICT COMPLIANCE REQUIRED:
-You are an isolated sub-agent in a multi-agent pipeline. You have NO memory
-of previous conversations. You must NEVER output:
-  • Raw tool results, raw JSON, or full CSV rows
-  • Raw web scraping content, HTML fragments, or Markdown dumps from URLs
-  • Conversational filler, greetings, or sign-offs
-  • Verbose prose, disclaimers, or caveats
-  • Bullet points that merely restate the prompt
+You are the RAG Data Compressor. Your sole function is to take verbose
+research, strategy, and planning texts and compress them into hyper-dense,
+data-only summaries.
 
-No matter how much data you gather from the web or local CSVs, you must
-NEVER output raw tool text. You must DIGEST all web data and local data
-into a single, unified, highly dense summary.
+CRITICAL COMPACTION RULES — violating these causes pipeline failure:
 
-Your ENTIRE response must be a single, hyper-compressed summary wrapped in
-<summary></summary> tags containing EXACTLY these four numbered sections:
+1. ZERO META-TALK: Never narrate your own actions. Forbidden phrases:
+   "I was asked to...", "The current state is...", "Here is the summary...",
+   "Based on the research...".
+2. NO NARRATIVE: Eliminate all conversational English, filler words, and
+   transitional phrases.
+3. TELEGRAPHIC STYLE: Use extreme shorthand. Output only raw metrics,
+   core entities, numbers, and definitive actions.
+4. NO REDUNDANCY: State each metric exactly once. Never repeat data
+   across sections.
+
+=== EXAMPLES ===
+
+BAD (Bloated):
+"1. Task Overview: I was asked to develop a business strategy for launching
+a premium pet-food subscription service in Tier-2 Indian cities, targeting
+25% of the 300,000 pet owners in Lucknow."
+
+GOOD (Hyper-Compressed):
+"Task: Launch premium pet-food subscription.
+Target: Tier-2 cities (Primary: Lucknow).
+TAM: 300k owners.
+Capture Goal: 25%."
+
+BAD (Bloated):
+"To measure success, key performance indicators (KPIs) will include customer
+acquisition costs, customer retention rates, and revenue growth, with target
+numbers of 10,000 subscribers."
+
+GOOD (Hyper-Compressed):
+"KPIs: CAC, Retention (Target: 75%), YoY Revenue Growth (Target: +20%).
+Milestone 1: 10k subscribers (Year 1)."
+
+=== END EXAMPLES ===
+
+OUTPUT FORMAT — wrap your ENTIRE response in <summary></summary> tags with
+EXACTLY these four numbered sections:
 
 <summary>
-1. Task Overview: [One sentence — what you were asked to do]
-2. Current State: [2-3 sentences — what has been accomplished so far]
-3. Important Discoveries: [Bullet list of hyper-specific data points,
-   numbers, percentages, names, contacts from tools. NO vague statements.]
-4. Context to Preserve: [Strictly what the next agent in the pipeline
-   needs to know to do its job. Nothing else.]
+1. Task Overview: [One telegraphic sentence]
+2. Current State: [2-3 telegraphic sentences — accomplishments only]
+3. Important Discoveries: [Bullet list — hyper-specific data points,
+   numbers, percentages, names, contacts. NO vague statements.]
+4. Context to Preserve: [Strictly what the next pipeline agent needs.
+   Nothing else.]
 </summary>
 
-If you cannot fit your output into this structure, you are being too verbose.
-Compress harder. Token efficiency is critical.
+If output exceeds this structure, compress harder. Token efficiency is
+critical.
+""".strip()
+
+
+# =====================================================================
+#  JSON COMPACTION DIRECTIVE (Action Taker — machine-parseable output)
+# =====================================================================
+_JSON_COMPACTION_DIRECTIVE = """
+MANDATORY OUTPUT FORMAT — STRICT COMPLIANCE REQUIRED:
+You are a headless data-extraction node in a high-speed multi-agent pipeline.
+You have NO memory of previous conversations and NO conversational capabilities.
+
+You must NEVER output:
+  • Conversational filler, greetings, meta-commentary, or sign-offs
+  • Explanations of your thought process or caveats
+  • Raw tool results, unformatted CSV rows, or verbose prose
+  • Any text whatsoever before or after the JSON payload
+
+You must aggressively COMPRESS all input research and strategy data into
+hyper-dense, telegraphic fragments. Token efficiency and machine-parseability
+are your only metrics of success.
+
+Your ENTIRE response must be a single, valid JSON object matching EXACTLY
+this schema, with no deviations. You must output raw JSON only:
+
+{
+  "task": "[One 5-to-7 word sentence defining the ultimate objective]",
+  "market_metrics": [
+    "[Raw numbers, TAM, percentages. No narrative.]",
+    "[e.g., 'TAM: 300k', 'Target: 25%']"
+  ],
+  "competitors": [
+    "[Competitor name and estimated market share %]",
+    "[e.g., 'PetShop: 15% share']"
+  ],
+  "logistics": [
+    "[Core operational constraints, budgets, sqft sizes, specific locations]",
+    "[e.g., 'Budget: ₹10M', 'Size: 5000 sqft']"
+  ],
+  "next_actions": [
+    "[Strictly the immediate 2-3 steps required by the next agent in the pipeline]"
+  ]
+}
+
+If your output is not valid JSON, or if you include even one word of
+conversational text outside the braces, the entire pipeline will critically fail.
+Compress ruthlessly.
 """.strip()
 
 
@@ -132,6 +213,60 @@ def _extract_summary(raw: str) -> str:
         return match.group(1).strip()
     logger.warning("Agent output missing <summary> tags — using raw response as fallback")
     return raw.strip()
+
+
+# ─────────────────────────────────────────────────────────────────────
+#  Helper: extract JSON from Action Taker output
+# ─────────────────────────────────────────────────────────────────────
+_JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*(\{.*?\})\s*```", re.DOTALL)
+_RAW_JSON_RE = re.compile(r"(\{.*\})", re.DOTALL)
+
+
+def _extract_json(raw: str) -> str:
+    """
+    Extract a JSON object from the LLM response.
+
+    Handles three cases:
+    1. Clean raw JSON (ideal — Groq should produce this)
+    2. JSON wrapped in ```json ... ``` Markdown fences (Groq bleed)
+    3. JSON embedded in prose (worst case — extract first { ... })
+
+    Returns the JSON string, or the raw response as fallback.
+    """
+    stripped = raw.strip()
+
+    # Case 1: response is already clean JSON
+    if stripped.startswith("{") and stripped.endswith("}"):
+        try:
+            json.loads(stripped)
+            return stripped
+        except json.JSONDecodeError:
+            pass
+
+    # Case 2: Markdown-fenced JSON block
+    match = _JSON_BLOCK_RE.search(raw)
+    if match:
+        candidate = match.group(1).strip()
+        try:
+            json.loads(candidate)
+            logger.warning("ACTION_TAKER  ▸  Stripped Markdown fences from JSON output")
+            return candidate
+        except json.JSONDecodeError:
+            pass
+
+    # Case 3: extract first { ... } blob
+    match = _RAW_JSON_RE.search(raw)
+    if match:
+        candidate = match.group(1).strip()
+        try:
+            json.loads(candidate)
+            logger.warning("ACTION_TAKER  ▸  Extracted JSON from prose wrapper")
+            return candidate
+        except json.JSONDecodeError:
+            pass
+
+    logger.error("ACTION_TAKER  ▸  Could not extract valid JSON — using raw response")
+    return stripped
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -379,18 +514,11 @@ def action_taker_node(state: AgentState) -> dict:
     logger.debug("=" * 60)
 
     system_prompt = (
-        "You are a pragmatic operations expert acting as an ISOLATED sub-agent. "
-        "You have NO access to tools or raw data. Using ONLY the compressed "
-        "strategy provided, produce a hyper-compact, time-boxed action plan.\n\n"
-        "INSTRUCTIONS:\n"
-        "- You must NEVER output raw data, JSON, or CSV rows.\n"
-        "- Include: specific tasks with owners, deadlines (exact dates or week "
-        "numbers), resource requirements (dollar amounts or headcount), and "
-        "KPIs with numeric targets.\n"
-        "- Reference specific contacts, locations, and prices from the research "
-        "and strategy where applicable.\n"
-        "- Format as a numbered list grouped by phase.\n\n"
-        f"{_COMPACTION_DIRECTIVE}"
+        "You are a pragmatic operations expert acting as a HEADLESS "
+        "data-extraction node. You have NO access to tools or raw data. "
+        "Using ONLY the compressed strategy provided, produce a "
+        "machine-parseable action plan as raw JSON.\n\n"
+        f"{_JSON_COMPACTION_DIRECTIVE}"
     )
 
     critic_feedback = state.get("critic_feedback", "")
@@ -415,14 +543,14 @@ def action_taker_node(state: AgentState) -> dict:
     raw = response.content
     logger.debug("ACTION_TAKER  ▸  Raw LLM response length: %d chars", len(raw))
 
-    compact = _extract_summary(raw)
-    logger.debug("ACTION_TAKER  ▸  Compact summary length: %d chars", len(compact))
-    logger.debug("ACTION_TAKER  ▸  Compact preview: %.400s", compact)
+    compact = _extract_json(raw)
+    logger.debug("ACTION_TAKER  ▸  JSON output length: %d chars", len(compact))
+    logger.debug("ACTION_TAKER  ▸  JSON preview: %.400s", compact)
 
     return {
         "final_plan": compact,
         "current_agent": "action_taker",
-        "messages": [f"[Action Taker] Completed plan ({len(compact)} chars compacted)"],
+        "messages": [f"[Action Taker] Completed plan ({len(compact)} chars JSON)"],
     }
 
 
@@ -541,6 +669,88 @@ def critic_node(state: AgentState) -> dict:
 
 
 # =====================================================================
+#  SUMMARIZE CONVERSATION NODE  (memory management for chat follow-ups)
+# =====================================================================
+def summarize_conversation_node(state: AgentState) -> dict:
+    """
+    Compress older chat_history turns into a rolling summary to keep
+    the context window bounded.
+
+    Logic
+    ~~~~~
+    1. Read ``chat_history`` and ``summary`` from state.
+    2. Keep the **N most recent** turns intact (N = threshold // 2, min 2).
+    3. Extract the older turns and send them (plus any existing summary)
+       to the LLM for compression.
+    4. Return the new ``summary`` and the trimmed ``chat_history``.
+
+    Because ``chat_history`` uses ``_overwrite`` semantics, returning a
+    shorter list directly replaces the old one in the checkpoint.
+
+    Inputs read  : chat_history, summary
+    Outputs set  : chat_history, summary, messages
+    """
+    chat_history = state.get("chat_history", []) or []
+    existing_summary = state.get("summary", "") or ""
+
+    logger.debug("=" * 60)
+    logger.debug("SUMMARIZE_CONVERSATION NODE  ▸  ENTRY")
+    logger.debug("  chat_history length : %d", len(chat_history))
+    logger.debug("  existing_summary    : %.200s", existing_summary)
+    logger.debug("=" * 60)
+
+    # Keep the most recent turns for conversational continuity
+    keep_count = max(settings.message_summary_threshold // 2, 2)
+    old_turns = chat_history[:-keep_count]
+    recent_turns = chat_history[-keep_count:]
+
+    logger.debug("SUMMARIZE  ▸  Compressing %d old turns, keeping %d recent",
+                 len(old_turns), len(recent_turns))
+
+    # ── Build the summarisation prompt ───────────────────────────────
+    system_prompt = (
+        "You are a conversation summariser for a business strategy AI system. "
+        "Your job is to produce an ultra-compressed summary of older chat "
+        "exchanges so the system can maintain context without storing every "
+        "message.\n\n"
+        "RULES:\n"
+        "- Output a single dense paragraph, max 150 words.\n"
+        "- Capture: key questions asked, decisions made, specific data points "
+        "  referenced (numbers, names, locations, prices).\n"
+        "- Do NOT include greetings, meta-commentary, or filler.\n"
+        "- If an existing summary is provided, MERGE it with the new "
+        "  information — do not repeat what's already captured."
+    )
+
+    user_content = ""
+    if existing_summary:
+        user_content += f"EXISTING SUMMARY:\n{existing_summary}\n\n"
+    user_content += "OLDER CHAT TURNS TO SUMMARIZE:\n"
+    user_content += "\n".join(old_turns)
+
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_content),
+    ]
+
+    logger.debug("SUMMARIZE  ▸  Invoking LLM for summary generation …")
+    response = _get_llm().invoke(messages)
+    new_summary = response.content.strip()
+
+    logger.debug("SUMMARIZE  ▸  New summary length: %d chars", len(new_summary))
+    logger.debug("SUMMARIZE  ▸  Summary preview: %.300s", new_summary)
+
+    return {
+        "summary": new_summary,
+        "chat_history": recent_turns,
+        "messages": [
+            f"[Summarizer] Compressed {len(old_turns)} old turns → "
+            f"{len(new_summary)} chars summary, kept {len(recent_turns)} recent"
+        ],
+    }
+
+
+# =====================================================================
 #  CHAT AGENT NODE  (follow-up questions on existing threads)
 # =====================================================================
 def chat_agent_node(state: AgentState) -> dict:
@@ -553,21 +763,44 @@ def chat_agent_node(state: AgentState) -> dict:
       - compact_strategy
       - final_plan
       - user_prompt (original)
+      - summary (rolling summary of older chat turns)
+      - chat_history (recent Q&A turns)
 
     It does NOT re-run tools. It synthesises an answer from what the
     pipeline has already produced.
 
     Inputs read  : follow_up_question, user_prompt, compact_research,
-                   compact_strategy, final_plan
-    Outputs set  : follow_up_response, current_agent, messages
+                   compact_strategy, final_plan, summary, chat_history
+    Outputs set  : follow_up_response, current_agent, messages,
+                   chat_history
     """
     question = state.get("follow_up_question", "")
+    existing_summary = state.get("summary", "") or ""
+    chat_history = state.get("chat_history", []) or []
 
     logger.debug("=" * 60)
     logger.debug("CHAT_AGENT NODE  ▸  ENTRY")
     logger.debug("  follow_up_question : %.200s", question)
     logger.debug("  user_prompt        : %.200s", state.get("user_prompt", ""))
+    logger.debug("  chat_history turns : %d", len(chat_history))
+    logger.debug("  summary length     : %d", len(existing_summary))
     logger.debug("=" * 60)
+
+    # ── Build system prompt with optional summary context ────────────
+    summary_section = ""
+    if existing_summary:
+        summary_section = (
+            "\nCONVERSATION SUMMARY (older exchanges):\n"
+            f"{existing_summary}\n"
+        )
+
+    history_section = ""
+    if chat_history:
+        history_section = (
+            "\nRECENT CONVERSATION HISTORY:\n"
+            + "\n".join(chat_history[-6:])  # Show at most 6 recent turns
+            + "\n"
+        )
 
     system_prompt = (
         "You are a helpful business advisor answering a follow-up question. "
@@ -577,8 +810,10 @@ def chat_agent_node(state: AgentState) -> dict:
         "- Original Business Prompt\n"
         "- Compressed Research (market data, contacts, pricing)\n"
         "- Compressed Strategy (value prop, GTM, KPIs)\n"
-        "- Final Action Plan (phased tasks, deadlines, metrics)\n\n"
-        "INSTRUCTIONS:\n"
+        "- Final Action Plan (phased tasks, deadlines, metrics)\n"
+        + ("- Conversation Summary (older exchanges)\n" if existing_summary else "")
+        + ("- Recent Conversation History\n" if chat_history else "")
+        + "\nINSTRUCTIONS:\n"
         "- Answer the user's follow-up question accurately using ONLY the "
         "  context provided below.\n"
         "- Be concise but thorough. Reference specific data points, names, "
@@ -593,26 +828,34 @@ def chat_agent_node(state: AgentState) -> dict:
         f"ORIGINAL BUSINESS PROMPT:\n{state.get('user_prompt', 'N/A')}\n\n"
         f"COMPRESSED RESEARCH:\n{state.get('compact_research', 'N/A')}\n\n"
         f"COMPRESSED STRATEGY:\n{state.get('compact_strategy', 'N/A')}\n\n"
-        f"FINAL ACTION PLAN:\n{state.get('final_plan', 'N/A')}\n\n"
+        f"FINAL ACTION PLAN:\n{state.get('final_plan', 'N/A')}\n"
+        f"{summary_section}"
+        f"{history_section}\n"
         f"═══════════════════════════════════════════════════════════════\n"
         f"USER FOLLOW-UP QUESTION:\n{question}"
     )
 
-    messages = [
+    llm_messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_content),
     ]
 
     logger.debug("CHAT_AGENT  ▸  Invoking LLM …")
-    response = _get_llm().invoke(messages)
+    response = _get_llm().invoke(llm_messages)
     answer = response.content.strip()
 
     logger.debug("CHAT_AGENT  ▸  Response length: %d chars", len(answer))
     logger.debug("CHAT_AGENT  ▸  Response preview: %.400s", answer)
 
+    # ── Append this Q&A pair to chat_history ─────────────────────────
+    updated_history = list(chat_history)
+    updated_history.append(f"Q: {question}")
+    updated_history.append(f"A: {answer}")
+
     return {
         "follow_up_response": answer,
         "current_agent": "chat_agent",
+        "chat_history": updated_history,
         "messages": [f"[Chat Agent] Answered follow-up ({len(answer)} chars)"],
     }
 
