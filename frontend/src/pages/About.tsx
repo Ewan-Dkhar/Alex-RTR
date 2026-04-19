@@ -4,9 +4,10 @@ import { SectionHeading } from "../components/ui/SectionHeading"
 import { Card } from "../components/ui/Card"
 
 const team = [
-  { name: "First Founder", role: "CEO & AI Expert", bio: "Passionate about empowering local businesses through artificial intelligence." },
-  { name: "Second Founder", role: "SEO & Marketer", bio: "Focused on building scalable, performant and beautiful user interfaces." },
-  { name: "Third Founder", role: "Head of Product", bio: "Ensuring every output creates distinct value for our future entrepreneurs." }
+  { name: "Ewansalan Dkhar", role: "Backend Developer", bio: "Passionate about empowering local businesses through artificial intelligence." },
+  { name: "Piyansh Shukla", role: "AI Developer", bio: "Focused on building scalable, performant and beautiful user interfaces." },
+  { name: "Aditya Raj", role: "DataBase & Feature Head", bio: "Ensuring every output creates distinct value for our future entrepreneurs." },
+  { name: "Atharva Vaish", role: "Frontend Designer", bio: "Architecting robust systems to ensure reliable and fast performance." }
 ]
 
 export function About() {
@@ -67,14 +68,14 @@ export function About() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">Meet the Team</h2>
           <p className="text-slate-500">The builders behind Alex-RTR</p>
         </div>
         
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
