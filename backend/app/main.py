@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # We will import our routes here shortly
-from app.api.routes import health
+from app.api.routes import health, analysis
 
 app = FastAPI(
     title="Alex RTR API",
@@ -27,3 +27,4 @@ app.add_middleware(
 
 # Wire up the routers
 app.include_router(health.router, prefix="/api/health", tags=["System Health"])
+app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
