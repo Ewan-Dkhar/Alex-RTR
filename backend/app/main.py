@@ -35,7 +35,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
-    "http://localhost:5175"
+    "http://localhost:5175",
+    f"{settings.VITE_API_BASE_URL}"
 ]
 
 app.add_middleware(
