@@ -67,6 +67,7 @@ from app.services.agents import (
     critic_node,
     researcher_node,
     strategist_node,
+    summarize_conversation_node,
 )
 
 logger = logging.getLogger(__name__)
@@ -94,10 +95,32 @@ def _route_entry(state: AgentState) -> str:
     """Pick the entry path based on whether this is a follow-up or new run."""
     fq = state.get("follow_up_question", "")
     if fq and fq.strip():
-        logger.debug("ROUTE_ENTRY  ▸  follow_up_question detected → chat_agent")
-        return "chat_agent"
+        logger.debug("ROUTE_ENTRY  ▸  follow_up_question detected → chat_entry")
+        return "chat_entry"
     logger.debug("ROUTE_ENTRY  ▸  No follow-up → researcher (new pipeline)")
     return "researcher"
+
+
+# =====================================================================
+#  Conditional chat entry: summarize first if history is long
+# =====================================================================
+def _route_chat_entry(state: AgentState) -> str:
+    """Check chat_history length and decide whether to summarize first."""
+    chat_history = state.get("chat_history", []) or []
+    threshold = settings.message_summary_threshold
+
+    if len(chat_history) > threshold:
+        logger.debug(
+            "ROUTE_CHAT_ENTRY  ▸  chat_history=%d > threshold=%d → summarize_conversation",
+            len(chat_history), threshold,
+        )
+        return "summarize_conversation"
+
+    logger.debug(
+        "ROUTE_CHAT_ENTRY  ▸  chat_history=%d <= threshold=%d → chat_agent",
+        len(chat_history), threshold,
+    )
+    return "chat_agent"
 
 
 # =====================================================================
@@ -154,8 +177,9 @@ def _build_graph() -> StateGraph:
     graph.add_node("action_taker", action_taker_node)
     graph.add_node("critic", critic_node)
     graph.add_node("chat_agent", chat_agent_node)
+    graph.add_node("summarize_conversation", summarize_conversation_node)
 
-    logger.debug("Nodes registered: researcher, strategist, action_taker, critic, chat_agent")
+    logger.debug("Nodes registered: researcher, strategist, action_taker, critic, chat_agent, summarize_conversation")
 
     # ── Conditional entry point ──────────────────────────────────────
     graph.add_conditional_edges(
@@ -163,11 +187,25 @@ def _build_graph() -> StateGraph:
         _route_entry,
         {
             "researcher": "researcher",
+            "chat_entry": "chat_entry",
+        },
+    )
+
+    logger.debug("Conditional entry: START → researcher | chat_entry")
+
+    # ── Chat entry: conditional gate (summarize if history is long) ──
+    graph.add_node("chat_entry", lambda state: {})  # pass-through
+    graph.add_conditional_edges(
+        "chat_entry",
+        _route_chat_entry,
+        {
+            "summarize_conversation": "summarize_conversation",
             "chat_agent": "chat_agent",
         },
     )
 
-    logger.debug("Conditional entry: START → researcher | chat_agent")
+    # ── After summarization → chat_agent ─────────────────────────────
+    graph.add_edge("summarize_conversation", "chat_agent")
 
     # ── Chat agent goes straight to END (no Critic needed) ───────────
     graph.add_edge("chat_agent", END)
@@ -178,7 +216,7 @@ def _build_graph() -> StateGraph:
     graph.add_edge("action_taker", "critic")
 
     logger.debug("Edges: researcher→critic, strategist→critic, action_taker→critic")
-    logger.debug("Edge: chat_agent→END")
+    logger.debug("Edges: summarize_conversation→chat_agent→END")
 
     # ── After Critic → conditional routing ───────────────────────────
     graph.add_conditional_edges(
@@ -244,6 +282,8 @@ def run_graph(user_prompt: str, thread_id: str | None = None) -> dict:
         "tools_output": {},
         "follow_up_question": "",
         "follow_up_response": "",
+        "chat_history": [],
+        "summary": "",
     }
 
     config = {"configurable": {"thread_id": thread_id}}
