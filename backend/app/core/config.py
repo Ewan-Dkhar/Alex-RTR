@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # ── Critic ───────────────────────────────────────────────────────────
     max_critic_retries: int = 2
 
+    # ── Web Tools ────────────────────────────────────────────────────────
+    serper_api_key: str = ""
+    firecrawl_api_key: str = ""
+
     # ── Logging ──────────────────────────────────────────────────────────
     log_level: str = "DEBUG"
 
