@@ -7,7 +7,7 @@ const team = [
   { name: "Ewansalan Dkhar", role: "Backend Developer", bio: "Passionate about empowering local businesses through artificial intelligence." },
   { name: "Piyansh Shukla", role: "AI Developer", bio: "Focused on building scalable, performant and beautiful user interfaces." },
   { name: "Aditya Raj", role: "DataBase & Feature Head", bio: "Ensuring every output creates distinct value for our future entrepreneurs." },
-  { name: "Atharva Vaish", role: "Frontend Designer", bio: "Architecting robust systems to ensure reliable and fast performance." }
+  { name: "Atharva Vaish", role: "Frontend Developer", bio: "Architecting robust systems to ensure reliable and fast performance." }
 ]
 
 export function About() {
