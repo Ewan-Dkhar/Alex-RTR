@@ -9,9 +9,9 @@ export interface CardProps extends HTMLMotionProps<"div"> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const variants = {
-      default: "bg-white border border-gray-100 shadow-sm",
-      raised: "bg-skeuo-white border border-gray-50 shadow-[var(--shadow-skeuo)]",
-      flat: "bg-gray-50 border border-gray-100",
+      default: "bg-white border border-[rgba(37,99,235,0.06)] shadow-[var(--shadow-premium)]",
+      raised: "bg-white border border-[rgba(37,99,235,0.08)] shadow-[var(--shadow-premium)] hover:shadow-[0_20px_40px_-12px_rgba(37,99,235,0.1)] transition-shadow duration-300",
+      flat: "bg-white border border-[rgba(37,99,235,0.08)]",
     }
     
     return (

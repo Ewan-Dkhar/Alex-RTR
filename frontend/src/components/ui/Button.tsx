@@ -10,10 +10,10 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", ...props }, ref) => {
     const variants = {
-      primary: "bg-skeuo-primary text-white shadow-[var(--shadow-skeuo)] border border-blue-400 hover:shadow-[var(--shadow-skeuo-hover)] active:shadow-[var(--shadow-skeuo-active)]",
-      secondary: "bg-white text-gray-800 shadow-[var(--shadow-skeuo)] border border-gray-200 hover:shadow-[var(--shadow-skeuo-hover)] active:shadow-[var(--shadow-skeuo-active)]",
-      outline: "bg-transparent text-gray-700 border-2 border-gray-300 hover:border-gray-400",
-      ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
+      primary: "bg-blue-600 text-white shadow-[0_8px_20px_-6px_rgba(37,99,235,0.4)] border border-blue-500 hover:bg-blue-700 hover:shadow-[0_12px_24px_-6px_rgba(37,99,235,0.6)] hover:-translate-y-0.5",
+      secondary: "bg-white text-gray-800 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] border border-[rgba(37,99,235,0.1)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.08)] hover:-translate-y-0.5",
+      outline: "bg-transparent text-gray-700 border-2 border-[rgba(37,99,235,0.15)] hover:border-blue-200 hover:bg-blue-50/50",
+      ghost: "bg-transparent text-gray-700 hover:bg-blue-50",
     }
     
     const sizes = {

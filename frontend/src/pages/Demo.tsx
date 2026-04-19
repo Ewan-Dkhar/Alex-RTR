@@ -192,8 +192,8 @@ export function Demo() {
   };
 
   return (
-    <div className="min-h-screen bg-skeuo-white pt-8 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFF] pt-8 pb-20 font-sans">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -224,11 +224,13 @@ export function Demo() {
           {/* Left Column (Top Locations + Chat) */}
           <div className="lg:col-span-1 flex flex-col gap-6 h-[800px]">
             <Card variant="raised" className="flex flex-col p-0 overflow-hidden bg-white max-h-[350px]">
-              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 shrink-0">
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Star className="text-amber-500 fill-amber-500" size={18} /> Top 5 Recommendations
+              <div className="p-4 border-b border-[rgba(37,99,235,0.06)] bg-[#F8FAFF] shrink-0 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
+                    <Star className="text-amber-500 fill-amber-500" size={18} /> Top 5 Recommendations
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Best areas for {selectedDomain}</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">Best areas for {selectedDomain}</p>
               </div>
               
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -242,18 +244,18 @@ export function Demo() {
                     >
                       <div 
                         onClick={() => setSelectedLocation(loc)}
-                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                        className={`p-3 rounded-2xl border transition-all cursor-pointer ${
                           selectedLocation?.id === loc.id 
-                            ? 'border-blue-500 bg-blue-50/50 shadow-md ring-1 ring-blue-500' 
-                            : 'border-gray-100 hover:border-blue-200 hover:bg-gray-50 hover:shadow-sm'
+                            ? 'border-blue-500 bg-blue-50/30 shadow-[0_4px_12px_rgba(37,99,235,0.1)]' 
+                            : 'border-[rgba(37,99,235,0.06)] hover:border-blue-200 hover:bg-[#F8FAFF]'
                         }`}
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
                               {i + 1}
                             </div>
-                            <h4 className="font-bold text-gray-900 text-sm">{loc.name}</h4>
+                            <h4 className="font-bold text-slate-900 text-sm tracking-tight">{loc.name}</h4>
                           </div>
                           <span className={`text-xs font-extrabold ${loc.roi >= 22 ? 'text-orange-600' : loc.roi >= 15 ? 'text-yellow-600' : 'text-blue-600'}`}>
                             {loc.roi}% ROI
@@ -276,9 +278,10 @@ export function Demo() {
             </Card>
 
             <Card variant="raised" className="flex-1 min-h-[400px] flex flex-col p-0 overflow-hidden bg-white print:hidden">
-              <div className="p-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500" /> AI Consultant
+              <div className="p-4 border-b border-[rgba(37,99,235,0.06)] bg-[#F8FAFF] shrink-0">
+                <div className="font-bold text-slate-900 flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[10px]">AI</div>
+                  AI Consultant
                 </div>
               </div>
               
@@ -344,27 +347,33 @@ export function Demo() {
               }}
             >
               <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full border border-blue-50 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-2"><MapPin size={24} className="text-blue-100/50" /></div>
-                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 z-10"><MapPin size={14} className="text-blue-500"/> Selected Area</div>
-                  <div className="text-xl font-bold text-gray-900 z-10">{currentRegion?.name || 'Avg of Filtered'}</div>
-                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md self-start mt-2 z-10">{selectedDomain}</div>
+                <Card variant="raised" className="p-5 flex flex-col justify-center transition-transform h-full">
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <div className="p-1 bg-blue-50 rounded-md text-blue-600"><MapPin size={14} /></div>
+                    Selected Area
+                  </div>
+                  <div className="text-2xl font-black text-slate-900">{currentRegion?.name || 'Avg of Filtered'}</div>
+                  <div className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md self-start mt-3">{selectedDomain}</div>
                 </Card>
               </motion.div>
               <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full border border-green-50 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-2"><BadgeIndianRupee size={24} className="text-green-100/50" /></div>
-                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 z-10"><BadgeIndianRupee size={14} className="text-green-500"/> Target Budget</div>
-                  <div className="text-xl font-bold text-gray-900 z-10">₹{totalCapEx}L</div>
-                  <div className="text-[10px] text-gray-500 self-start mt-2 z-10">Max Budget Set</div>
+                <Card variant="raised" className="p-5 flex flex-col justify-center transition-transform h-full">
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <div className="p-1 bg-green-50 rounded-md text-green-600"><BadgeIndianRupee size={14} /></div>
+                    Target Budget
+                  </div>
+                  <div className="text-2xl font-black text-slate-900">₹{totalCapEx}L</div>
+                  <div className="text-[11px] font-medium text-slate-400 self-start mt-3">Max Budget Set</div>
                 </Card>
               </motion.div>
               <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="sm:col-span-1 col-span-2">
-                <Card variant="raised" className="p-5 flex flex-col justify-center hover:scale-[1.02] transition-transform h-full border border-orange-50 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-2"><TrendingUp size={24} className="text-orange-100/50" /></div>
-                  <div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 z-10"><TrendingUp size={14} className="text-orange-500"/> Projected ROI</div>
-                  <div className="text-lg font-bold text-gray-900 z-10">{(currentRegion ? currentRegion.roi : (filteredLocations.reduce((sum: number, l: any) => sum + l.roi, 0) / (filteredLocations.length || 1))).toFixed(1)}% <span className="text-sm font-normal text-gray-500">for {selectedDomain}</span></div>
-                  <div className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded-md self-start mt-2 z-10">{currentRegion && currentRegion.roi >= 22 ? 'Excellent' : 'Good'} Potential</div>
+                <Card variant="raised" className="p-5 flex flex-col justify-center transition-transform h-full">
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <div className="p-1 bg-orange-50 rounded-md text-orange-600"><TrendingUp size={14} /></div>
+                    Projected ROI
+                  </div>
+                  <div className="text-2xl font-black text-slate-900">{(currentRegion ? currentRegion.roi : (filteredLocations.reduce((sum: number, l: any) => sum + l.roi, 0) / (filteredLocations.length || 1))).toFixed(1)}% <span className="text-sm font-medium text-slate-400">for {selectedDomain}</span></div>
+                  <div className="text-[11px] text-orange-600 font-bold bg-orange-50 px-2.5 py-1 rounded-md self-start mt-3">{currentRegion && currentRegion.roi >= 22 ? 'Excellent' : 'Good'} Potential</div>
                 </Card>
               </motion.div>
             </motion.div>

@@ -17,14 +17,14 @@ export function Navbar() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-[rgba(37,99,235,0.08)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-blue-600 p-2 rounded-xl text-white shadow-md">
+        <div className="flex justify-between items-center h-20">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="bg-blue-600 p-2.5 rounded-2xl text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]">
               <Rocket size={20} />
             </div>
-            <span className="font-bold text-xl text-gray-900 tracking-tight">Alex-RTR</span>
+            <span className="font-extrabold text-xl text-gray-900 tracking-tight">Alex-RTR</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -33,18 +33,24 @@ export function Navbar() {
                 key={link.path} 
                 to={link.path}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-blue-600",
-                  location.pathname === link.path ? "text-blue-600" : "text-gray-600"
+                  "text-sm font-semibold transition-all relative py-2",
+                  location.pathname === link.path ? "text-blue-600" : "text-gray-500 hover:text-gray-900"
                 )}
               >
                 {link.name}
+                {location.pathname === link.path && (
+                  <motion.div 
+                    layoutId="navbar-indicator"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-t-full"
+                  />
+                )}
               </Link>
             ))}
           </nav>
 
           <div className="hidden md:flex">
             <Link to="/demo">
-              <Button size="sm">Get Started</Button>
+              <Button size="md" className="rounded-full px-6 font-bold tracking-wide">Get Started</Button>
             </Link>
           </div>
 

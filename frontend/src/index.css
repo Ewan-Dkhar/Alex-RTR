@@ -1,19 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3B82F6;
-  --color-primary-hover: #2563EB;
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
   --color-secondary: #60A5FA;
-  --color-bg-base: #F7F7F4;
+  --color-bg-base: #F8FAFF;
   --color-card-white: #FFFFFF;
-  --color-card-offwhite: #F2F2EE;
-  --color-text-primary: #1F2937;
-  --color-text-secondary: #6B7280;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #64748B;
   
-  --shadow-skeuo: 2px 4px 12px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.8);
-  --shadow-skeuo-hover: 4px 8px 16px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.9);
-  --shadow-skeuo-active: inset 2px 2px 6px rgba(0,0,0,0.1);
-  --shadow-beveled: inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-skeuo: 0px 4px 20px rgba(37,99,235,0.06);
+  --shadow-skeuo-hover: 0px 10px 30px rgba(37,99,235,0.12);
+  --shadow-skeuo-active: 0px 2px 10px rgba(37,99,235,0.04);
+  --shadow-beveled: 0px 4px 20px rgba(37,99,235,0.06);
+  
+  --shadow-premium: 0px 12px 36px rgba(37,99,235,0.08); /* Replaces many specific shadows */
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -27,12 +29,12 @@ body {
 
 @layer utilities {
   .bg-skeuo-primary {
-    background: linear-gradient(145deg, #3B82F6, #2563EB);
+    background: linear-gradient(145deg, #60A5FA, #2563EB);
   }
   .bg-skeuo-white {
-    background: linear-gradient(135deg, #ffffff, #f9f9f7);
+    background: #FFFFFF;
   }
   .bg-skeuo-gray {
-    background: linear-gradient(135deg, #f9f9f7, #ecece8);
+    background: #F8FAFF;
   }
 }
